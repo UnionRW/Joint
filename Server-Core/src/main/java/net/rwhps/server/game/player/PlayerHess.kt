@@ -35,7 +35,7 @@ open class PlayerHess(
     conIn: AbstractNetConnectServer?,
     /**   */
     val i18NBundle: I18NBundle,
-        //
+    //
     var playerPrivateData: AbstractLinkPlayerData = HeadlessModuleManage.hps.gameLinkServerData.getDefPlayerData()
 ) {
     var con: AbstractNetConnectServer? by Synchronize(conIn)
@@ -52,10 +52,13 @@ open class PlayerHess(
 
     /** Headless player index  */
     var index by playerPrivateData::index
+
     /** Server player position  */
     var position
         get() = (index + 1)
-        set(value) { index = (value - 1) }
+        set(value) {
+            index = (value - 1)
+        }
 
     /** Team number  */
     var team by playerPrivateData::team
@@ -71,11 +74,12 @@ open class PlayerHess(
     var timeTemp: Long = 0
     var lastMessageTime: Long = 0
     var lastSentMessage: String? = ""
-    var noSay = false
 
     /** */
     var credits by playerPrivateData::credits
     var startUnit by playerPrivateData::startUnit
+
+    val ping get() = playerPrivateData.ping
 
     /** Is the player alive  */
     val survive get() = playerPrivateData.survive
@@ -98,12 +102,13 @@ open class PlayerHess(
     /** 单实验单位被击杀数 */
     val experimentalsLost get() = playerPrivateData.experimentalsLost
 
+    var name by playerPrivateData::name
 
-    val name get() = playerPrivateData.name
     val connectHexID get() = playerPrivateData.connectHexID
 
     open val isAi = false
     var aiDifficulty by playerPrivateData::aiDifficulty
+    var share by playerPrivateData::share
 
     val statusData
         get() = ObjectMap<String, Int>().apply {
@@ -115,9 +120,10 @@ open class PlayerHess(
             put("experimentalsLost", experimentalsLost)
         }
 
-    val playerInfo: String get() {
-        return "$name / Position: $position / IP: ${con!!.coverConnect().ip} / Use: ${con!!.coverConnect().useConnectionAgreement} / Admin: $isAdmin"
-    }
+    val playerInfo: String
+        get() {
+            return "$name / Position: $position / IP: ${con!!.coverConnect().ip} / Use: ${con!!.coverConnect().useConnectionAgreement} / Admin: $isAdmin"
+        }
 
     val infoObject
         get() = ObjectMap<String, Any>().apply {

@@ -13,9 +13,10 @@ import com.corrodinggames.librocket.b
 import com.corrodinggames.librocket.scripts.Multiplayer
 import com.corrodinggames.librocket.scripts.Root
 import com.corrodinggames.librocket.scripts.ScriptContext
-import com.corrodinggames.rts.gameFramework.j.ad
-import com.corrodinggames.rts.gameFramework.l
+import com.corrodinggames.rts.union.gameFramework.j.class_1001
+import com.corrodinggames.rts.union.gameFramework.class_1061
 import com.corrodinggames.rts.java.Main
+import com.corrodinggames.rts.union.game.b.class_299
 import net.rwhps.server.core.ServiceLoader
 import net.rwhps.server.game.event.EventManage
 import net.rwhps.server.game.headless.core.*
@@ -65,11 +66,11 @@ internal object GameEngine {
         })
     }
 
-    val gameEngine: l get() = l.B()
-    val mapEngine: com.corrodinggames.rts.game.b.b get() = gameEngine.bL
-    val netEngine: ad get() = gameEngine.bX
+    val gameEngine: class_1061 get() = class_1061.method_3076()
+    val mapEngine: class_299 get() = gameEngine.field_6339
+    val netEngine: class_1001 get() = gameEngine.field_6352
 
-    val settingsEngine get() = gameEngine.bQ!!
+    val settingsEngine get() = gameEngine.field_6345!!
 
     val gameStatistics get() = gameEngine.bY!!
 

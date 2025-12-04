@@ -31,6 +31,7 @@ import net.rwhps.server.util.game.command.CommandHandler
 import net.rwhps.server.util.inline.ifEmptyResult
 import net.rwhps.server.util.log.Log
 import net.rwhps.server.util.str.StringFilteringUtil.cutting
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
@@ -142,61 +143,14 @@ internal class UpListMain: Plugin() {
     }
 
     private fun initUpListData(urlIn: String = ""): Boolean {
-        if (NetStaticData.RwHps.netType.ordinal in IRwHps.NetType.ServerProtocol.ordinal .. IRwHps.NetType.ServerTestProtocol.ordinal) {
-            (NetStaticData.RwHps.typeConnect.abstractNetConnect as AbstractNetConnectServer).run {
-                versionBeta = supportedversionBeta
-                versionGame = supportedversionGame
-                versionGameInt = supportedVersionInt
-            }
+        serverID = "u_${UUID.randomUUID()}}"
+        addData =
+            "action=add&_1={TIME}&game_name=Unnamed&game_version={RW-HPS.RW.VERSION.INT}&game_version_string={RW-HPS.RW.VERSION}&game_version_beta={RW-HPS.RW.IS.VERSION}&private_token_2=ae8aea418ec0ea809ab04a70528d12f4&confirm=c270c51b7255f6400694d820a40f9666&id=${serverID}&user_id=${serverID}&private_token=1nic1gkc0suaeb5e2f0gkvb3eueue40tmr3d3og2&password_required={RW-HPS.RW.IS.PASSWD}&created_by={RW-HPS.S.NAME}&private_ip={RW-HPS.S.PRIVATE.IP}&port_number={RW-HPS.S.PORT}&game_map={RW-HPS.RW.MAP.NAME}&game_mode=skirmishMap&game_status=battleroom&player_count={RW-HPS.PLAYER.SIZE}&max_player_count={RW-HPS.PLAYER.SIZE.MAX}"
+        openData = "action=self_info&port={RW-HPS.S.PORT}&id=${serverID}&tx3=4024"
+        updateData =
+            "action=update&id=${serverID}&user_id=${serverID}&private_token=1nic1gkc0suaeb5e2f0gkvb3eueue40tmr3d3og2&password_required={RW-HPS.RW.IS.PASSWD}&created_by={RW-HPS.S.NAME}&private_ip={RW-HPS.S.PRIVATE.IP}&port_number={RW-HPS.S.PORT}&game_map={RW-HPS.RW.MAP.NAME}&game_mode=skirmishMap&game_status={RW-HPS.S.STATUS}&player_count={RW-HPS.PLAYER.SIZE}&max_player_count={RW-HPS.PLAYER.SIZE.MAX}"
+        removeData = "action=remove&id=${serverID}"
 
-        } else {
-            versionBeta = false
-            versionGame = "1.15-Other"
-            versionGameInt = 176
-        }
-
-
-        val url = urlIn.ifBlank { Data.urlData.readString("Get.Api.UpListData.Bak") }
-
-        var resultUpList = Data.core.http.doPost(url, version)
-
-        if (resultUpList.isBlank() && urlIn.isBlank()) {
-            resultUpList = Data.core.http.doPost(Data.urlData.readString("Get.Api.UpListData"), version)
-        }
-
-        if (resultUpList.isBlank()) {
-            Log.error("[Get UPLIST Data Error] Unexpected error Failed to initialize")
-            return false
-        }
-
-        if (resultUpList.startsWith("[-1]")) {
-            Log.error("[Get UPLIST Data Error] Please Check API")
-            return false
-        } else if (resultUpList.startsWith("[-2]")) {
-            Log.error("[Get UPLIST Data Error] IP prohibited")
-            return false
-        } else if (resultUpList.startsWith("[-4]")) {
-            Log.error("[Get UPLIST Data Error] Version Error")
-            val newUrl = resultUpList.substring(8, resultUpList.length)
-            return if (newUrl == "Error") {
-                Log.error("[Get UPLIST Data Error] Version Error & New Error")
-                false
-            } else {
-                initUpListData(newUrl)
-            }
-        } else if (resultUpList.startsWith("[-0]")) {
-            Log.error("[UPLIST Info] ${resultUpList.removePrefix("[-0]")}")
-        } else if (resultUpList.startsWith("[-5]")) {
-            Log.error(resultUpList)
-        }
-
-        val json = Json(resultUpList)
-
-        serverID = Base64.decodeString(json.getString("id"))
-        addData = Base64.decodeString(json.getString("add"))
-        openData = Base64.decodeString(json.getString("open"))
-        updateData = Base64.decodeString(json.getString("update"))
-        removeData = Base64.decodeString(json.getString("remove"))
         return true
     }
 

@@ -23,6 +23,11 @@ interface AbstractLinkGameFunction {
      */
     fun allPlayerSync()
 
+    /**
+    * 延迟自动同步
+    * */
+    fun delaySync()
+
     fun pauseGame(pause: Boolean)
 
     /**

@@ -30,6 +30,8 @@ dependencies {
     api("com.lmax:disruptor:3.4.4")
 
 
+    //compileOnly(fileTree(mapOf("dir" to "libs", "include" to "game-lib.bak.jar")))
+    compileOnly(fileTree(mapOf("dir" to "libs", "include" to "Server-All.jar")))
     compileOnly(fileTree(mapOf("dir" to "libs", "include" to "game-lib.jar")))
     compileOnly(fileTree(mapOf("dir" to "libs", "include" to "slick.jar")))
 
@@ -61,8 +63,8 @@ dependencies {
 
     implementation("it.unimi.dsi:fastutil-core:8.5.13")
 
-    compileOnlyAndTest("org.graalvm.js:js:${Versions.graalvmVersion}")
-    compileOnlyAndTest("org.graalvm.sdk:graal-sdk:${Versions.graalvmVersion}")
+    //compileOnlyAndTest("org.graalvm.js:js:${Versions.graalvmVersion}")
+    //compileOnlyAndTest("org.graalvm.sdk:graal-sdk:${Versions.graalvmVersion}")
     implementation(fileTree(mapOf("dir" to "libs", "include" to "wasm.jar")))
 
     testApi("org.junit.jupiter:junit-jupiter-engine:5.10.1")

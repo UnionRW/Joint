@@ -9,6 +9,7 @@
 
 package net.rwhps.server.dependent.redirections.game
 
+import com.corrodinggames.rts.union.gameFramework.i.class_992
 import net.rwhps.asm.data.MethodTypeInfoValue
 import net.rwhps.server.dependent.redirections.MainRedirections
 import net.rwhps.server.util.annotations.mark.AsmMark
@@ -28,18 +29,18 @@ class CustomRedirections: MainRedirections {
     override fun register() {
         /* 屏蔽游戏错误捕获 */
         @GameSimulationLayer.GameSimulationLayer_KeyWords("setDefaultUncaughtExceptionHandler")
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/l", "aq", "()V"))
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/l", "method_2981", "()V"))
 
         /* MOD启用器覆盖(强制启用除自带以外) */
         @GameSimulationLayer.GameSimulationLayer_KeyWords("Loading mod selection")
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/i/a", "f", "()V")) { obj: Any, _: String, _: Class<*>, _: Array<out Any?> ->
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/i/class_991", "f", "()V")) { obj: Any, _: String, _: Class<*>, _: Array<out Any?> ->
             Log.debug("[Hess] Try Loading mod selection")
-            val modDataClass = "com.corrodinggames.rts.gameFramework.i.b".toClassAutoLoader(obj)!!
+            val modDataClass = "com.corrodinggames.rts.union.gameFramework.i.class_992".toClassAutoLoader(obj)!!
 
-            val modNameField = modDataClass.findField("c", String::class.java)!!
-            val modEnableField = modDataClass.findField("f", Boolean::class.javaPrimitiveType)!!
+            val modNameField = modDataClass.findField("field_5807", String::class.java)!!
+            val modEnableField = modDataClass.findField("field_5810", Boolean::class.javaPrimitiveType)!!
 
-            ("com.corrodinggames.rts.gameFramework.i.a".toClassAutoLoader(obj)!!.findField("e", ArrayList::class.java)!!.get(obj) as ArrayList<*>).forEach {
+            ("com.corrodinggames.rts.union.gameFramework.i.class_991".toClassAutoLoader(obj)!!.findField("field_5783", ArrayList::class.java)!!.get(obj) as ArrayList<*>).forEach {
                 // 过滤原版单位
                 if (modNameField[it] != "mega_builders") {
                     modEnableField.setBoolean(it, false)

@@ -9,10 +9,9 @@
 
 package net.rwhps.server.plugin.internal.headless.inject.lib
 
-import com.corrodinggames.rts.gameFramework.j.NetEnginePackaging
-import com.corrodinggames.rts.gameFramework.j.ad
-import com.corrodinggames.rts.gameFramework.j.au
-import com.corrodinggames.rts.gameFramework.j.c
+import com.corrodinggames.rts.union.gameFramework.j.NetEnginePackaging
+import com.corrodinggames.rts.union.gameFramework.j.class_1001
+import com.corrodinggames.rts.union.gameFramework.j.class_1032
 import net.rwhps.server.core.thread.CallTimeTask
 import net.rwhps.server.core.thread.Threads
 import net.rwhps.server.data.global.Data
@@ -30,14 +29,14 @@ import net.rwhps.server.plugin.internal.headless.inject.core.link.PrivateClassLi
 import net.rwhps.server.plugin.internal.headless.inject.net.GameVersionServer
 import net.rwhps.server.plugin.internal.headless.inject.net.socket.HessSocket
 import java.util.concurrent.TimeUnit
-import com.corrodinggames.rts.gameFramework.j.c as PlayerConnect
+import com.corrodinggames.rts.union.gameFramework.j.class_1037 as PlayerConnect
 
 /**
  * @author Dr (dr@der.kim)
  */
 class PlayerConnectX(
-    val netEngine: ad, val connectionAgreement: ConnectionAgreement
-): PlayerConnect(netEngine, HessSocket(connectionAgreement)) {
+    val netEngine: class_1001, val connectionAgreement: ConnectionAgreement
+) : PlayerConnect(netEngine, HessSocket(connectionAgreement)) {
 
     val netEnginePackaging: NetEnginePackaging = NetEnginePackaging(netEngine, this)
     var room: ServerRoom = HeadlessModuleManage.hessLoaderMap[this.javaClass.classLoader.toString()]!!.room
@@ -45,19 +44,19 @@ class PlayerConnectX(
     lateinit var serverConnect: GameVersionServer
 
     @Synchronized
-    override fun a(p0: Boolean, p1: Boolean, p2: String?) {
-        super.a(p0, p1, p2)
+    override fun method_2897(p0: Boolean, p1: Boolean, p2: String?) {
+        super.method_2897(p0, p1, p2)
         serverConnect.disconnect()
     }
 
-    override fun d() {
+    override fun method_2900() {
         // Register BIO
     }
 
-    override fun a(packetHess: au) {
+    override fun method_2894(packetHess: class_1032) {
         if (player == null) {
-            if (this.e() != "<null>") {
-                player = room.playerManage.addAbstractPlayer(serverConnect, PrivateClassLinkPlayer(z))
+            if (this.method_2902() != "<null>") {
+                player = room.playerManage.addAbstractPlayer(serverConnect, PrivateClassLinkPlayer(field_6142))
 
                 serverConnect.player = player!!
 
@@ -65,29 +64,29 @@ class PlayerConnectX(
 
                 if (!Threads.containsTimeTask(CallTimeTask.CallTeamTask)) {
                     Threads.newTimedTask(CallTimeTask.CallTeamTask, 0, 1, TimeUnit.SECONDS) {
-                        GameEngine.netEngine.e(null as c?)
-                        GameEngine.netEngine.L()
+                        GameEngine.netEngine.method_2765(null)
+                        GameEngine.netEngine.method_2821()
                     }
                 }
             }
         } else {
             // 在这里过滤走官方的包, 加入 RW-HPS 的一些修改
             run {
-                when (packetHess.b) {
+                when (packetHess.field_6124) {
                     PacketType.PREREGISTER_INFO.typeInt -> {
-                        GameInputStream(packetHess.c).use {
+                        GameInputStream(packetHess.field_6125).use {
                             val o = GameOutputStream()
                             o.writeString(it.readString())
                             o.transferToFixedLength(it, 12)
                             o.writeString(Data.SERVER_ID)
                             it.skip(it.readShort().toLong())
                             o.transferTo(it)
-                            packetHess.c = o.getByteArray()
+                            packetHess.field_6125 = o.getByteArray()
                         }
                     }
                     // 修改, 使 客户端 显示 AdminUI
                     PacketType.SERVER_INFO.typeInt -> {
-                        GameInputStream(packetHess.c).use {
+                        GameInputStream(packetHess.field_6125).use {
                             val o = GameOutputStream()
                             it.skip(it.readShort().toLong())
                             o.writeString(Data.SERVER_ID)
@@ -104,12 +103,12 @@ class PlayerConnectX(
                             it.skip(1)
                             o.writeBoolean(player!!.isAdmin)
                             o.transferTo(it)
-                            packetHess.c = o.getByteArray()
+                            packetHess.field_6125 = o.getByteArray()
                         }
                     }
                     // 修改, 使 客户端 显示 HOST
                     PacketType.TEAM_LIST.typeInt -> {
-                        GameInputStream(packetHess.c).use {
+                        GameInputStream(packetHess.field_6125).use {
                             val o = GameOutputStream()
                             val site = it.readInt()
                             o.writeInt(site)
@@ -161,7 +160,7 @@ class PlayerConnectX(
                                     o.flushEncodeData(teamIn)
                                 }
                                 o.transferTo(it)
-                                packetHess.c = o.getByteArray()
+                                packetHess.field_6125 = o.getByteArray()
                             }
                         }
                     }
@@ -176,9 +175,9 @@ class PlayerConnectX(
             }
         }
         run {
-            when (packetHess.b) {
+            when (packetHess.field_6124) {
                 PacketType.KICK.typeInt -> {
-                    GameInputStream(packetHess.c).use {
+                    GameInputStream(packetHess.field_6125).use {
                         val o = GameOutputStream()
                         val msg = it.readString()
                         if (Data.configServer.maxPlayerJoinAd.isNotBlank() && msg.contains("free")) {
@@ -188,7 +187,7 @@ class PlayerConnectX(
                         } else {
                             return@run
                         }
-                        packetHess.c = o.getByteArray()
+                        packetHess.field_6125 = o.getByteArray()
                     }
                 }
             }
@@ -197,11 +196,11 @@ class PlayerConnectX(
         serverConnect.sendPacket(netEnginePackaging.transformPacket(packetHess))
     }
 
-    override fun f(): String {
+    override fun method_2904(): String {
         return connectionAgreement.ip
     }
 
-    override fun g(): String {
+    override fun method_2905(): String {
         return connectionAgreement.ip
     }
 }

@@ -22,15 +22,22 @@ internal class LinkGameFunction: AbstractLinkGameFunction {
     override fun allPlayerSync() {
         try {
             synchronized(GameEngine.gameEngine) {
-                GameEngine.netEngine.a(false, false, true)
+                GameEngine.netEngine.method_2756(false, false, true)
             }
         } catch (e: Exception) {
             Log.error(e.cause!!)
         }
     }
 
+    override fun delaySync() {
+        val net = GameEngine.gameEngine.field_6352
+        val timer = net.javaClass.getDeclaredField("field_5954")
+        timer.isAccessible = true
+        timer[net] = 1
+    }
+
     override fun pauseGame(pause: Boolean) {
-        GameEngine.netEngine.e(pause)
+        GameEngine.netEngine.method_2782(pause)
     }
 
     override fun battleRoom(time: Int) {
@@ -39,7 +46,7 @@ internal class LinkGameFunction: AbstractLinkGameFunction {
     }
 
     override fun saveGame() {
-        GameEngine.gameEngine.ca.b(getFileNameNoSuffix(GameEngine.data.room.replayFileName), false)
+        GameEngine.gameEngine.field_6355.b(getFileNameNoSuffix(GameEngine.data.room.replayFileName), false)
         Log.clog("Save: ${getFileNameNoSuffix(GameEngine.data.room.replayFileName)}.rwsave")
     }
 
@@ -47,7 +54,7 @@ internal class LinkGameFunction: AbstractLinkGameFunction {
         if (GameEngine.iRwHps == null || GameEngine.iRwHps!!.netType != IRwHps.NetType.ServerProtocol) {
             return
         }
-        GameEngine.gameEngine.bX.b("exited")
+        GameEngine.gameEngine.field_6352.method_2769("exited")
         GameEngine.root.showMainMenu()
         InterruptedException().printStackTrace()
     }

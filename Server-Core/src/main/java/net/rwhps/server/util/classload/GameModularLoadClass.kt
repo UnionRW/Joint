@@ -153,7 +153,7 @@ open class GameModularLoadClass(
                 return result
             }
 
-            throw ClassNotFoundException()
+            throw ClassNotFoundException(nameIn)
         }
 
 

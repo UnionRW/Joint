@@ -36,10 +36,10 @@ class ASMTest {
                     load.addSourceJar(v)
                 }
             }
-            net.rwhps.asm.Test().a(load, load.classPathMapData["com/corrodinggames/rts/gameFramework/e/c"]!!, FileUtils.getFile("a.class").writeByteOutputStream())
-            net.rwhps.asm.Test().b(load, load.classPathMapData["com/corrodinggames/rts/gameFramework/e/c"]!!, FileUtils.getFile("b.class").writeByteOutputStream())
-            net.rwhps.asm.Test().c(load, load.classPathMapData["com/corrodinggames/rts/gameFramework/e/c"]!!, FileUtils.getFile("c.class").writeByteOutputStream())
-            net.rwhps.asm.Test().d(load, load.classPathMapData["com/corrodinggames/rts/gameFramework/e/c"]!!, FileUtils.getFile("d.class").writeByteOutputStream())
+            net.rwhps.asm.Test().a(load, load.classPathMapData["com/corrodinggames/rts/union/gameFramework/e/class_901"]!!, FileUtils.getFile("a.class").writeByteOutputStream())
+            net.rwhps.asm.Test().b(load, load.classPathMapData["com/corrodinggames/rts/union/gameFramework/e/class_901"]!!, FileUtils.getFile("b.class").writeByteOutputStream())
+            net.rwhps.asm.Test().c(load, load.classPathMapData["com/corrodinggames/rts/union/gameFramework/e/class_901"]!!, FileUtils.getFile("c.class").writeByteOutputStream())
+            net.rwhps.asm.Test().d(load, load.classPathMapData["com/corrodinggames/rts/union/gameFramework/e/class_901"]!!, FileUtils.getFile("d.class").writeByteOutputStream())
         } catch (e: Exception) {
             Log.fatal(e)
         }

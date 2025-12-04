@@ -26,5 +26,5 @@ class PlayerOperationFactoryBuildUnitEvent(
 ) : AbstractEventImpl {
     // 操作是否有效
     @JvmField
-    var resultStatus = true
+    var canceled = false
 }

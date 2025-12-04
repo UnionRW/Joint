@@ -9,9 +9,10 @@
 
 package net.rwhps.server.plugin.internal.headless.inject.net
 
-import com.corrodinggames.rts.game.n
-import com.corrodinggames.rts.game.units.am
-import com.corrodinggames.rts.gameFramework.w
+import com.corrodinggames.rts.union.game.class_324
+import com.corrodinggames.rts.union.game.units.class_409
+import com.corrodinggames.rts.union.game.units.class_426
+import com.corrodinggames.rts.union.gameFramework.class_773
 import net.rwhps.server.core.thread.CallTimeTask
 import net.rwhps.server.core.thread.Threads
 import net.rwhps.server.data.global.Data
@@ -62,7 +63,8 @@ import kotlin.math.min
  * @author Dr (dr@der.kim)
  */
 @MainProtocolImplementation
-open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetConnect(playerConnectX.connectionAgreement), AbstractNetConnectData, AbstractNetConnectServer {
+open class GameVersionServer(val playerConnectX: PlayerConnectX) :
+    AbstractNetConnect(playerConnectX.connectionAgreement), AbstractNetConnectData, AbstractNetConnectServer {
     init {
         playerConnectX.serverConnect = this
     }
@@ -190,6 +192,14 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
             val message: String = stream.readString()
             var response: CommandHandler.CommandResponse? = null
 
+            val event = PlayerChatEvent(GameEngine.data, player, message)
+
+            GameEngine.data.eventManage.fire(event).await()
+            if (event.canceled) {
+                packet.status = Control.EventNext.STOPPED
+                return
+            }
+
             // Afk Stop
             if (player.isAdmin && Threads.containsTimeTask(CallTimeTask.PlayerAfkTask)) {
                 Threads.closeTimeTask(CallTimeTask.PlayerAfkTask)
@@ -224,17 +234,18 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
                     packet.status = Control.EventNext.STOPPED
                     return
                 }
-                GameEngine.data.eventManage.fire(PlayerChatEvent(GameEngine.data, player, messageOut))
             } else if (response.type != CommandHandler.ResponseType.valid) {
                 when (response.type) {
                     CommandHandler.ResponseType.manyArguments -> {
                         player.sendSystemMessage("Too many arguments. Usage: " + response.command.text + " " + response.command.paramText)
                         packet.status = Control.EventNext.STOPPED
                     }
+
                     CommandHandler.ResponseType.fewArguments -> {
                         player.sendSystemMessage("Too few arguments. Usage: " + response.command.text + " " + response.command.paramText)
                         packet.status = Control.EventNext.STOPPED
                     }
+
                     else -> {
                         // Ignore
                     }
@@ -258,7 +269,14 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
                             packet.status = Control.EventNext.STOPPED
                             return
                         } else {
-                            PlayerOperationUnitEvent(GameEngine.data, player, it.gameCommandActions, it.unitName, it.x, it.y).let { event ->
+                            PlayerOperationUnitEvent(
+                                GameEngine.data,
+                                player,
+                                it.gameCommandActions,
+                                it.unitName,
+                                it.x,
+                                it.y
+                            ).let { event ->
                                 GameEngine.data.eventManage.fire(event).await()
                                 if (!event.resultStatus) {
                                     packet.status = Control.EventNext.STOPPED
@@ -270,7 +288,8 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
                 }
                 if (command.mapPoint != null && command.actionIdData.actionId.startsWith("c_6_")) {
                     GamePingActions.from(command.actionIdData.actionId.removePrefix("c_6_"))!!.let { action ->
-                        val lambda = player.getData<(AbstractNetConnectServer, GamePingActions, Float, Float) -> Unit>("Ping")
+                        val lambda =
+                            player.getData<(AbstractNetConnectServer, GamePingActions, Float, Float) -> Unit>("Ping")
                         if (lambda != null) {
                             lambda(this, action, command.mapPoint!![0], command.mapPoint!![1])
                             player.removeData("Ping")
@@ -279,9 +298,9 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
                 }
 
                 if (!command.actionIdData.actionId.startsWith("_")) {
-                    PlayerOperationFactoryBuildUnitEvent(GameEngine.data, player, command.actionIdData).let { event->
+                    PlayerOperationFactoryBuildUnitEvent(GameEngine.data, player, command.actionIdData).let { event ->
                         GameEngine.data.eventManage.fire(event).await()
-                        if (!event.resultStatus) {
+                        if (event.canceled) {
                             packet.status = Control.EventNext.STOPPED
                             return
                         }
@@ -314,7 +333,7 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
 
     override fun gameSummon(unit: String, x: Float, y: Float) {
         try {
-//            val commandPacket = GameEngine.gameEngine.cf.b()
+//            val commandPacket = GameEngine.gameEngine.field_6412.b()
 //
 //            val out = GameOutputStream()
 //            out.flushEncodeData(CompressOutputStream.getGzipOutputStream("c", false).apply {
@@ -324,8 +343,15 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
 //            commandPacket.a(GameNetInputStream(playerConnectX.netEnginePackaging.transformHessPacket(out.createPacket(PacketType.TICK))))
 //
 //            commandPacket.c = GameEngine.data.gameHessData.tickNetHess + 10
-//            GameEngine.gameEngine.cf.b.add(commandPacket)
-            GameEngine.data.gameData.commandPacketList.add(rwHps.abstractNetPacket.gameSummonPacket(player.index, unit, x, y).bytes)
+//            GameEngine.gameEngine.field_6412.b.add(commandPacket)
+            GameEngine.data.gameData.commandPacketList.add(
+                rwHps.abstractNetPacket.gameSummonPacket(
+                    player.index,
+                    unit,
+                    x,
+                    y
+                ).bytes
+            )
         } catch (e: Exception) {
             Log.error(e)
         }
@@ -373,17 +399,17 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
             GameEngine.data.eventManage.fire(PlayerLeaveEvent(GameEngine.data, player)).await()
 
             if (Data.neverEnd && player.never) {
-                synchronized(am.bE) {
+                synchronized(class_426.field_1908) {
                     GameEngine.data.gameFunction.suspendMainThreadOperations {
-                        val n = n.k(player.index)
-                        val it: Iterator<*> = am.bE.iterator()
+                        val n = class_324.method_526(player.index)
+                        val it: Iterator<*> = class_426.field_1908.iterator()
                         while (it.hasNext()) {
-                            val amVar = it.next() as am
-                            if (amVar.bX.k == player.index && amVar is  com.corrodinggames.rts.game.units.y) {
-                                w.er.remove(amVar)
+                            val amVar = it.next() as class_426
+                            if (amVar.field_1927.field_1457 == player.index && amVar is class_409) {
+                                class_773.field_4230.remove(amVar)
                             }
                         }
-                        n.I()
+                        n.method_444()
                         GameEngine.data.gameLinkFunction.allPlayerSync()
                     }
                 }

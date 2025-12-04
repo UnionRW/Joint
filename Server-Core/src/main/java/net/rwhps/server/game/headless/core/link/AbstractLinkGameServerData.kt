@@ -38,12 +38,13 @@ interface AbstractLinkGameServerData {
     var startingunits: Int
 
     fun getDefPlayerData(): AbstractLinkPlayerData {
-        return object: AbstractLinkPlayerData {
+        return object : AbstractLinkPlayerData {
             private val error: () -> Nothing get() = throw ImplementedException.PlayerImplementedException("[Player] No Bound PlayerData")
 
             override fun updateDate() {
                 throw ImplementedException.PlayerImplementedException("[Player] No Bound PlayerData")
             }
+
             override val survive get() = error()
             override val unitsKilled get() = error()
             override val buildingsKilled get() = error()
@@ -52,8 +53,10 @@ interface AbstractLinkGameServerData {
             override val buildingsLost get() = error()
             override val experimentalsLost get() = error()
             override var credits: Int = 0
-            override val name get() = error()
+            override var name: String = ""
             override val connectHexID get() = error()
+            override val ping get() = error()
+            override var share: Boolean = false
             override var index = 0
             override var team = 0
             override var startUnit = 0

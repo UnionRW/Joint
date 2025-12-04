@@ -8,8 +8,8 @@
  */
 package net.rwhps.server.plugin.internal.headless.inject.ex
 
-import com.corrodinggames.rts.gameFramework.j.NetEnginePackaging
-import com.corrodinggames.rts.gameFramework.j.k
+import com.corrodinggames.rts.union.gameFramework.j.NetEnginePackaging
+import com.corrodinggames.rts.union.gameFramework.j.class_1044
 import net.rwhps.server.core.thread.Threads
 import net.rwhps.server.data.global.NetStaticData
 import net.rwhps.server.game.enums.GameInternalUnits
@@ -76,8 +76,8 @@ class FFA_X {
 
     fun onEachFrame() {
         val map = GameEngine.mapEngine
-        val getWidthInPixels = map.C.toFloat()
-        val getHeightInPixels = map.D.toFloat()
+        val getWidthInPixels = map.field_877.toFloat()
+        val getHeightInPixels = map.field_878.toFloat()
         if (!setup) {
             setup = true
             Log.debug("ClosingBorder setup")
@@ -86,7 +86,7 @@ class FFA_X {
             //circleY=getHeightInPixels/2;
             circleX = getWidthInPixels / 2
             circleY = getHeightInPixels / 2
-            circleSize = (map.C / 2).toFloat() * 1.4f
+            circleSize = (map.field_877 / 2).toFloat() * 1.4f
             circleLastChangedBy = 0f
             showSafeZone(circleX, circleY, circleSize)
             setCircle(circleX, circleY, circleSize)
@@ -137,17 +137,17 @@ class FFA_X {
 
     fun queueUnitSpawnCommand(unit: GameInternalUnits, x: Float, y: Float, size: Int) {
         try {
-            val commandPacket = GameEngine.gameEngine.cf.b()
+            val commandPacket = GameEngine.gameEngine.field_6412.method_2060()
 
             val out = GameOutputStream()
             out.flushEncodeData(CompressOutputStream.getGzipOutputStream("c", false).apply {
                 writeBytes(NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(-1, unit.name, x, y, size).bytes)
             })
 
-            commandPacket.a(k(NetEnginePackaging.transformHessPacketNullSource(out.createPacket(PacketType.TICK))))
+            commandPacket.method_2142(class_1044(NetEnginePackaging.transformHessPacketNullSource(out.createPacket(PacketType.TICK))))
 
-            commandPacket.c = GameEngine.data.gameHessData.tickNetHess + 10
-            GameEngine.gameEngine.cf.b.add(commandPacket)
+            commandPacket.field_5084 = GameEngine.data.gameHessData.tickNetHess + 10
+            GameEngine.gameEngine.field_6412.field_4801.add(commandPacket)
             //GameEngine.netEngine.a(commandPacket)
         } catch (e: Exception) {
             Log.error(e)

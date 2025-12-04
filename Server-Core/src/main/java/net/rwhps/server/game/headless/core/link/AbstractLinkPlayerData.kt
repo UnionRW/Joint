@@ -17,6 +17,8 @@ import net.rwhps.server.util.annotations.mark.GameSimulationLayer
 interface AbstractLinkPlayerData {
     fun updateDate()
 
+    fun removePlayer() {}
+
     @GameSimulationLayer.GameSimulationLayer_KeyWords("is victorious!")
     val survive: Boolean
 
@@ -41,8 +43,9 @@ interface AbstractLinkPlayerData {
 
     var credits: Int
 
-    val name: String
+    var name: String
     val connectHexID: String
+    val ping: Int
     var index: Int
     var team: Int
     var startUnit: Int
@@ -50,5 +53,5 @@ interface AbstractLinkPlayerData {
 
     var aiDifficulty: Int
 
-    fun removePlayer() {}
+    var share: Boolean
 }

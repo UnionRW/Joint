@@ -9,8 +9,8 @@
 
 package net.rwhps.server.plugin.internal.headless.inject.command
 
-import com.corrodinggames.rts.game.n
-import com.corrodinggames.rts.gameFramework.j.ai
+import com.corrodinggames.rts.union.game.class_324
+import com.corrodinggames.rts.union.gameFramework.j.class_1016
 import net.rwhps.server.data.global.Data
 import net.rwhps.server.data.global.Data.LINE_SEPARATOR
 import net.rwhps.server.data.global.NetStaticData
@@ -27,7 +27,6 @@ import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.struct.map.BaseMap.Companion.toSeq
 import net.rwhps.server.util.Font16
 import net.rwhps.server.util.IsUtils
-import net.rwhps.server.util.IsUtils.notIsNumeric
 import net.rwhps.server.util.Time
 import net.rwhps.server.util.Time.getTimeFutureMillis
 import net.rwhps.server.util.console.tab.TabDefaultEnum.PlayerPosition
@@ -48,7 +47,11 @@ internal class ServerCommands(handler: CommandHandler) {
             room.call.sendSystemMessage(msg)
             log("All players has received the message : {0}", msg)
         }
-        handler.register("whisper", "<$PlayerPositionNoAI> <text...>", "serverCommands.whisper") { arg: Array<String>, log: StrCons ->
+        handler.register(
+            "whisper",
+            "<$PlayerPositionNoAI> <text...>",
+            "serverCommands.whisper"
+        ) { arg: Array<String>, log: StrCons ->
             TabCompleterProcess.playerPosition(arg[0], log)?.let {
                 val msg = arg[1].replace("<>", "")
                 it.sendSystemMessage(msg)
@@ -73,7 +76,7 @@ internal class ServerCommands(handler: CommandHandler) {
             }
         }
         handler.register(
-                "admin", "<add/remove> <$PlayerPositionNoAI>", "serverCommands.admin"
+            "admin", "<add/remove> <$PlayerPositionNoAI>", "serverCommands.admin"
         ) { arg: Array<String>, log: StrCons ->
             if (room.isStartGame) {
                 log(localeUtil.getinput("err.startGame"))
@@ -84,7 +87,7 @@ internal class ServerCommands(handler: CommandHandler) {
                 return@register
             }
             val add = "add" == arg[0]
-            TabCompleterProcess.playerPosition(arg[1], log)?.let { player->
+            TabCompleterProcess.playerPosition(arg[1], log)?.let { player ->
                 if (add) {
                     Data.core.admin.addAdmin(player.connectHexID, true)
                 } else {
@@ -121,27 +124,35 @@ internal class ServerCommands(handler: CommandHandler) {
             room.maps.mapType = data.mapType
             room.maps.mapName = nameNoPx
             room.maps.mapPlayer = ""
-            GameEngine.netEngine.az = "/SD/rusted_warfare_maps/$name"
-            GameEngine.netEngine.ay.a = ai.entries.toTypedArray()[data.mapType.ordinal]
-            GameEngine.netEngine.ay.b = name
+            GameEngine.netEngine.field_5875 = "/SD/rusted_warfare_maps/$name"
+            GameEngine.netEngine.field_5874.field_6012 = class_1016.entries.toTypedArray()[data.mapType.ordinal]
+            GameEngine.netEngine.field_5874.field_6013 = name
 
-            room.call.sendSystemMessage(localeUtil.getinput("map.to","Admin", room.maps.mapName))
-            GameEngine.netEngine.L()
+            room.call.sendSystemMessage(localeUtil.getinput("map.to", "Admin", room.maps.mapName))
+            GameEngine.netEngine.method_2821()
         }
         handler.register("unban", "<$PlayerPositionNoAI>", "serverCommands.ban") { arg: Array<String>, log: StrCons ->
             TabCompleterProcess.playerPosition(arg[0], log)?.let { player ->
                 GameEngine.data.eventManage.fire(PlayerBanEvent(gameModule, player))
             }
         }
-        handler.register("mute", "<$PlayerPositionNoAI> [Time(s)]", "serverCommands.mute") { arg: Array<String>, log: StrCons ->
+        handler.register(
+            "mute",
+            "<$PlayerPositionNoAI> [Time(s)]",
+            "serverCommands.mute"
+        ) { arg: Array<String>, log: StrCons ->
             TabCompleterProcess.playerPosition(arg[0], log)?.let { player ->
                 player.muteTime = getTimeFutureMillis(43200 * 1000L)
             }
         }
-        handler.register("kick", "<$PlayerPosition> [time]", "serverCommands.kick") { arg: Array<String>, log: StrCons ->
+        handler.register(
+            "kick",
+            "<$PlayerPosition> [time]",
+            "serverCommands.kick"
+        ) { arg: Array<String>, log: StrCons ->
             TabCompleterProcess.playerPosition(arg[0], log)?.let { player ->
                 player.kickTime = if (arg.size > 1) getTimeFutureMillis(
-                        arg[1].toInt() * 1000L
+                    arg[1].toInt() * 1000L
                 ) else getTimeFutureMillis(60 * 1000L)
                 try {
                     player.kickPlayer(localeUtil.getinput("kick.you"))
@@ -159,7 +170,11 @@ internal class ServerCommands(handler: CommandHandler) {
                 log(localeUtil.getinput("err.noStartGame"))
             }
         }
-        handler.register("giveadmin", "<$PlayerPositionNoAI>", "serverCommands.giveadmin") { arg: Array<String>, _: StrCons ->
+        handler.register(
+            "giveadmin",
+            "<$PlayerPositionNoAI>",
+            "serverCommands.giveadmin"
+        ) { arg: Array<String>, _: StrCons ->
             room.playerManage.playerGroup.eachAllFind({ p: PlayerHess -> p.isAdmin }) { i: PlayerHess ->
                 val player = room.playerManage.getPlayer(arg[0].toInt())
                 if (player != null) {
@@ -173,7 +188,11 @@ internal class ServerCommands(handler: CommandHandler) {
             room.playerManage.playerGroup.eachAll { e: PlayerHess -> e.muteTime = 0 }
         }
 
-        handler.register("team", "<$PlayerPosition> <Team>", "serverCommands.team") { arg: Array<String>, log: StrCons ->
+        handler.register(
+            "team",
+            "<$PlayerPosition> <Team>",
+            "serverCommands.team"
+        ) { arg: Array<String>, log: StrCons ->
             if (GameEngine.data.room.isStartGame) {
                 log(localeUtil.getinput("err.startGame"))
                 return@register
@@ -186,7 +205,7 @@ internal class ServerCommands(handler: CommandHandler) {
             synchronized(gameModule.gameLinkServerData.teamOperationsSyncObject) {
                 val playerPosition = arg[0].toInt() - 1
                 val newPosition = arg[1].toInt() - 1
-                n.k(playerPosition).r = newPosition
+                class_324.method_526(playerPosition).field_1464 = newPosition
             }
         }
     }
@@ -212,8 +231,10 @@ internal class ServerCommands(handler: CommandHandler) {
                 log("Admins: {0}", Data.core.admin.playerAdminData.size)
                 val data = StringBuilder()
                 for (player in Data.core.admin.playerAdminData.values) {
-                    data.append(LINE_SEPARATOR).append(player.name).append(" / ").append("ID: ").append(player.uuid).append(" / ")
-                        .append("Admin: ").append(player.admin).append(" / ").append("SuperAdmin: ").append(player.superAdmin)
+                    data.append(LINE_SEPARATOR).append(player.name).append(" / ").append("ID: ").append(player.uuid)
+                        .append(" / ")
+                        .append("Admin: ").append(player.admin).append(" / ").append("SuperAdmin: ")
+                        .append(player.superAdmin)
                 }
                 log(data.toString())
             }
@@ -251,7 +272,11 @@ internal class ServerCommands(handler: CommandHandler) {
     }
 
     private fun registerPlayerCustomEx(handler: CommandHandler) {
-        handler.register("addmoney", "<$PlayerPosition> <money>", "serverCommands.addmoney") { arg: Array<String>, log: StrCons ->
+        handler.register(
+            "addmoney",
+            "<$PlayerPosition> <money>",
+            "serverCommands.addmoney"
+        ) { arg: Array<String>, log: StrCons ->
             if (!room.isStartGame) {
                 log(localeUtil.getinput("err.noStartGame"))
                 return@register
@@ -265,7 +290,7 @@ internal class ServerCommands(handler: CommandHandler) {
         }
 
         handler.register(
-                "textbuild", "<UnitName> <Text> [index(NeutralByDefault)]", "serverCommands.textbuild"
+            "textbuild", "<UnitName> <Text> [index(NeutralByDefault)]", "serverCommands.textbuild"
         ) { arg: Array<String>, _: StrCons ->
             val cache = Seq<Array<ByteArray>>()
 
@@ -296,9 +321,10 @@ internal class ServerCommands(handler: CommandHandler) {
                         if (b.toInt() == 1) {
                             try {
                                 GameEngine.data.gameData.commandPacketList.add(
-                                        NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(
+                                    NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(
                                         index, arg[0], ((off + width) * 20).toFloat(), (height * 20).toFloat()
-                                ).bytes)
+                                    ).bytes
+                                )
                             } catch (e: Exception) {
                                 error(e)
                             }

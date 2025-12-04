@@ -15,6 +15,6 @@ import net.rwhps.server.game.headless.core.AbstractGameModule
  * @date 2023/7/5 10:09
  * @author Dr (dr@der.kim)
  */
-interface AbstractEventImpl: AbstractEvent {
+interface AbstractEventImpl : AbstractEvent {
     val gameModule: AbstractGameModule
 }

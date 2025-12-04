@@ -9,8 +9,8 @@
 
 package net.rwhps.server.plugin.internal.headless.inject.core
 
-import com.corrodinggames.rts.game.n
-import com.corrodinggames.rts.game.units.am
+import com.corrodinggames.rts.union.game.class_324
+import com.corrodinggames.rts.union.game.units.class_426
 import net.rwhps.server.data.global.Data
 import net.rwhps.server.dependent.redirections.game.FPSSleepRedirections
 import net.rwhps.server.game.event.game.ServerGameOverEvent.GameOverData
@@ -30,22 +30,22 @@ import org.newdawn.slick.GameContainer
 /**
  * @author Dr (dr@der.kim)
  */
-internal class GameHessData: AbstractGameHessData {
-    override val tickHess: Int get() = GameEngine.gameEngine.bx
-    override val tickNetHess: Int get() = GameEngine.netEngine.X
+internal class GameHessData : AbstractGameHessData {
+    override val tickHess: Int get() = GameEngine.gameEngine.field_6378
+    override val tickNetHess: Int get() = GameEngine.netEngine.field_5873
 
     override val gameDelta: Long get() = FPSSleepRedirections.deltaMillis
     override val gameFPS: Int get() = (GameEngine.appGameContainerObject as GameContainer).fps
 
     override fun getWin(position: Int): Boolean {
-        val teamData: n = n.k(position) ?: return false
+        val teamData: class_324 = class_324.method_526(position) ?: return false
 
-        return !teamData.b() && !teamData.G && !teamData.F && !teamData.E
+        return !teamData.method_464() && !teamData.field_1407 && !teamData.field_1406 && !teamData.field_1405
     }
 
-    private fun getWin(player: n?): Boolean {
-        val teamData: n = player ?: return false
-        return !teamData.b() && !teamData.G && !teamData.F && !teamData.E
+    private fun getWin(player: class_324?): Boolean {
+        val teamData: class_324 = player ?: return false
+        return !teamData.method_464() && !teamData.field_1407 && !teamData.field_1406 && !teamData.field_1405
     }
 
     override fun getGameOverData(): GameOverData? {
@@ -53,9 +53,9 @@ internal class GameHessData: AbstractGameHessData {
         var lastWinCount = 0
 
         for (position in 0 until Data.configServer.maxPlayer) {
-            val player: n = n.k(position) ?: continue
-            if (getWin(player) && player.r != lastWinTeam) {
-                lastWinTeam = player.r
+            val player: class_324 = class_324.method_526(position) ?: continue
+            if (getWin(player) && player.field_1464 != lastWinTeam) {
+                lastWinTeam = player.field_1464
                 lastWinCount++
             }
         }
@@ -63,9 +63,9 @@ internal class GameHessData: AbstractGameHessData {
         if (lastWinCount == 1) {
             val winPlayer = Seq<String>().apply {
                 for (position in 0 until Data.configServer.maxPlayer) {
-                    val player: n = n.k(position) ?: continue
-                    if (player.r == lastWinTeam) {
-                        add(player.v)
+                    val player: class_324 = class_324.method_526(position) ?: continue
+                    if (player.field_1464 == lastWinTeam) {
+                        add(player.field_1468)
                     }
                 }
             }
@@ -73,8 +73,8 @@ internal class GameHessData: AbstractGameHessData {
 
             val statusData = ObjectMap<String, ObjectMap<String, Int>>().apply {
                 for (position in 0 until Data.configServer.maxPlayer) {
-                    val player: n = n.k(position) ?: continue
-                    put(player.v, PrivateClassLinkPlayer(player).let {
+                    val player: class_324 = class_324.method_526(position) ?: continue
+                    put(player.field_1468, PrivateClassLinkPlayer(player).let {
                         ObjectMap<String, Int>().apply {
                             put("unitsKilled", it.unitsKilled)
                             put("buildingsKilled", it.buildingsKilled)
@@ -84,17 +84,17 @@ internal class GameHessData: AbstractGameHessData {
                             put("experimentalsLost", it.experimentalsLost)
                         }
                     })
-                    allPlayer.add(player.v)
+                    allPlayer.add(player.field_1468)
                 }
             }
 
             return GameOverData(
-                    Time.concurrentSecond() - GameEngine.data.room.startTime,
-                    allPlayer,
-                    winPlayer,
-                    MapManage.maps.mapName,
-                    statusData,
-                    GameEngine.data.room.replayFileName
+                Time.concurrentSecond() - GameEngine.data.room.startTime,
+                allPlayer,
+                winPlayer,
+                MapManage.maps.mapName,
+                statusData,
+                GameEngine.data.room.replayFileName
             )
         } else {
             return null
@@ -103,7 +103,7 @@ internal class GameHessData: AbstractGameHessData {
 
     override fun getPlayerBirthPointXY() {
         for (player in GameEngine.data.room.playerManage.playerGroup) {
-            n.k(player.index).let {
+            class_324.method_526(player.index).let {
                 var flagA = false
                 var flagB = false
                 var x: Float? = null
@@ -111,17 +111,17 @@ internal class GameHessData: AbstractGameHessData {
                 var x2: Float? = null
                 var y2: Float? = null
 
-                for (amVar in am.bF()) {
-                    if ((amVar is am) && !amVar.bV && amVar.bX == it) {
-                        if (amVar.bO && !flagA) {
+                for (amVar in class_426.method_964()) {
+                    if ((amVar is class_426) && !amVar.field_1925 && amVar.field_1927 == it) {
+                        if (amVar.field_1918 && !flagA) {
                             flagA = true
-                            x = amVar.eo
-                            y = amVar.ep
+                            x = amVar.field_4227
+                            y = amVar.field_4228
                         }
-                        if (amVar.bP && !flagB) {
+                        if (amVar.field_1919 && !flagB) {
                             flagB = true
-                            x2 = amVar.eo
-                            y2 = amVar.ep
+                            x2 = amVar.field_4227
+                            y2 = amVar.field_4228
                         }
                     }
                 }
@@ -136,7 +136,7 @@ internal class GameHessData: AbstractGameHessData {
     }
 
     override fun existPlayer(position: Int): Boolean {
-        return n.k(position) != null
+        return class_324.method_526(position) != null
     }
 
     override fun getHeadlessAIServer(): AbstractNetConnectServer {

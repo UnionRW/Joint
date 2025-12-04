@@ -9,7 +9,7 @@
 
 package net.rwhps.server.plugin.internal.headless.inject.core.link
 
-import com.corrodinggames.rts.game.n
+import com.corrodinggames.rts.union.game.class_324
 import net.rwhps.server.util.game.InternalConversion
 import net.rwhps.server.util.inline.ifNullResult
 import net.rwhps.server.util.math.RandomUtils
@@ -20,14 +20,14 @@ import net.rwhps.server.util.math.RandomUtils
  * @date 2024/1/30 19:06
  * @author Dr (dr@der.kim)
  */
-internal class PrivateClassLinkAIPlayer(private val playerData: n): PrivateClassLinkPlayer(playerData) {
-    override val name get() = "AI-${InternalConversion.getAIDifficultString(aiDifficulty)}"
+internal class PrivateClassLinkAIPlayer(private val playerData: class_324) : PrivateClassLinkPlayer(playerData) {
+    override var name: String = "AI-${InternalConversion.getAIDifficultString(aiDifficulty)}"
 
     override val connectHexID = "AI-${RandomUtils.getRandomString(8)}"
 
     override var aiDifficulty: Int
-        get() = playerData.z.ifNullResult(playerData.x) { it }
+        get() = playerData.field_1398.ifNullResult(playerData.field_1470) { it }
         set(value) {
-            playerData.z = value
+            playerData.field_1398 = value
         }
 }

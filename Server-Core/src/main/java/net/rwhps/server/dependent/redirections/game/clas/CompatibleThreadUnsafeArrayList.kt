@@ -9,8 +9,8 @@
 
 package net.rwhps.server.dependent.redirections.game.clas
 
-import com.corrodinggames.rts.gameFramework.j.NetEnginePackaging
-import com.corrodinggames.rts.gameFramework.j.k
+import com.corrodinggames.rts.union.gameFramework.j.NetEnginePackaging
+import com.corrodinggames.rts.union.gameFramework.j.class_1044
 import net.rwhps.asm.api.listener.RedirectionListener
 import net.rwhps.server.io.GameOutputStream
 import net.rwhps.server.io.output.CompressOutputStream
@@ -30,16 +30,16 @@ object CompatibleThreadUnsafeArrayList : RedirectionListener {
             GameEngine.data.gameData.commandPacketList.clear()
 
             cache.eachAll { bytes ->
-                val commandPacket = GameEngine.gameEngine.cf.b()
+                val commandPacket = GameEngine.gameEngine.field_6412.method_2060()
                 GameOutputStream().use {
                     it.flushEncodeData(CompressOutputStream.getGzipOutputStream("c", false).apply {
                         writeBytes(bytes)
                     })
-                    commandPacket.a(k(NetEnginePackaging.transformHessPacketNullSource(it.createPacket(PacketType.TICK))))
+                    commandPacket.method_2142(class_1044(NetEnginePackaging.transformHessPacketNullSource(it.createPacket(PacketType.TICK))))
                 }
 
-                commandPacket.c = GameEngine.data.gameHessData.tickNetHess + 10
-                GameEngine.gameEngine.cf.b.add(commandPacket)
+                commandPacket.field_5084 = GameEngine.data.gameHessData.tickNetHess + 10
+                GameEngine.gameEngine.field_6412.field_4801.add(commandPacket)
             }
         }
     }

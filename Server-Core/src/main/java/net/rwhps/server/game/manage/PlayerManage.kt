@@ -45,7 +45,10 @@ class PlayerManage(
         gameModule.gameScriptMultiPlayer.addAi()
         for (position in 0 until Data.configServer.maxPlayer) {
             if (getPlayer(position) == null && gameModule.gameHessData.existPlayer(position)) {
-                AiPlayer(gameModule.gameHessData.getHeadlessAIServer(), gameModule.gameLinkServerData.getPlayerAIData(position)).let {
+                AiPlayer(
+                    gameModule.gameHessData.getHeadlessAIServer(),
+                    gameModule.gameLinkServerData.getPlayerAIData(position)
+                ).let {
                     playerGroup.add(it)
                     playerAll.add(it)
                 }
@@ -147,6 +150,16 @@ class PlayerManage(
         for (player in playerAll) {
             if (player.team == team) {
                 result.add(player.name)
+            }
+        }
+        return result
+    }
+
+    fun getPlayersOnTheSameTeam(team: Int): Seq<PlayerHess> {
+        val result = Seq<PlayerHess>()
+        for (player in playerAll) {
+            if (player.team == team) {
+                result.add(player)
             }
         }
         return result

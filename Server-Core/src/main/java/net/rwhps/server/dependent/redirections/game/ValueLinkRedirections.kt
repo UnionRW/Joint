@@ -24,6 +24,6 @@ class ValueLinkRedirections: MainRedirections {
     override fun register() {
         // With Game Tick Injection Packet, For thread safety
         @GameSimulationLayer.GameSimulationLayer_KeyWords("Returning to battleroom in")
-        redirectL(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/j/ad", "a", "(F)V", true, CompatibleThreadUnsafeArrayList::class.java))
+        redirectL(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/j/class_1001", "method_2725", "(F)V", true, CompatibleThreadUnsafeArrayList::class.java))
     }
 }

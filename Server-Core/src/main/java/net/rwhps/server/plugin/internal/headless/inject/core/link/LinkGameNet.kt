@@ -9,11 +9,11 @@
 
 package net.rwhps.server.plugin.internal.headless.inject.core.link
 
-import com.corrodinggames.rts.game.n
-import com.corrodinggames.rts.gameFramework.j.CustomServerSocket
-import com.corrodinggames.rts.gameFramework.j.ad
-import com.corrodinggames.rts.gameFramework.j.ai
-import com.corrodinggames.rts.gameFramework.j.c
+import com.corrodinggames.rts.union.game.class_324
+import com.corrodinggames.rts.union.gameFramework.j.CustomServerSocket
+import com.corrodinggames.rts.union.gameFramework.j.class_1001
+import com.corrodinggames.rts.union.gameFramework.j.class_1016
+import com.corrodinggames.rts.union.gameFramework.j.class_1037
 import net.rwhps.server.data.global.Data
 import net.rwhps.server.game.GameMaps
 import net.rwhps.server.game.event.game.ServerHessStartPort
@@ -22,7 +22,7 @@ import net.rwhps.server.plugin.internal.headless.inject.core.GameEngine
 import net.rwhps.server.util.inline.findField
 import net.rwhps.server.util.log.Log
 import java.io.IOException
-import com.corrodinggames.rts.gameFramework.j.ao as ServerAcceptRunnable
+import com.corrodinggames.rts.union.gameFramework.j.class_1026 as ServerAcceptRunnable
 
 /**
  * @author Dr (dr@der.kim)
@@ -40,12 +40,12 @@ internal class LinkGameNet: AbstractLinkGameNet {
 
             //val playerName = settingsEngine.lastNetworkPlayerName
 
-            netEngine.y = name
-            val kVar2 = ad.b(ip, false)
+            netEngine.field_5985 = name
+            val kVar2 = class_1001.method_2771(ip, false)
             netEngine.a(kVar2)
-            val it: Iterator<*> = netEngine.aM.iterator()
+            val it: Iterator<*> = netEngine.field_5888.iterator()
             while (it.hasNext()) {
-                (it.next() as c).i = true
+                (it.next() as class_1037).field_6174 = true
             }
         } catch (e2: IOException) {
             Log.error("[GameCore] NewConnect Error", e2)
@@ -64,11 +64,11 @@ internal class LinkGameNet: AbstractLinkGameNet {
             saveMultiplayerReplays = Data.configServer.saveRePlayFile
         }
 
-        netEngine.m = port
-        netEngine.y = Data.headlessName
+        netEngine.field_5973 = port
+        netEngine.field_5985 = Data.headlessName
 
         if (Data.neverEnd) {
-            netEngine.s = true
+            netEngine.field_5979 = true
         }
 
         GameEngine.data.room.run {
@@ -79,22 +79,22 @@ internal class LinkGameNet: AbstractLinkGameNet {
 
                 // 设置新的监听
                 val tcpRunnable = CustomServerSocket(GameEngine.netEngine)
-                tcpRunnable.a(false)
+                tcpRunnable.method_2846(false)
 
                 // SocketServer
-                GameEngine.netEngine::class.java.findField("aE", ServerAcceptRunnable::class.java)!!
+                GameEngine.netEngine::class.java.findField("field_5880", ServerAcceptRunnable::class.java)!!
                     .set(GameEngine.netEngine, tcpRunnable)
                 // SocketServer Thread
-                GameEngine.netEngine::class.java.findField("aD", Thread::class.java)!!
+                GameEngine.netEngine::class.java.findField("field_5879", Thread::class.java)!!
                     .set(GameEngine.netEngine, Thread(tcpRunnable).apply { start() })
 
                 // 通过特性来干掉自带的 HOST
                 // 新建一个 Player[]
-                n.F()
+                class_324.method_543()
                 // 进行扩展
-                n.b(Data.configServer.maxPlayer, true)
+                class_324.method_488(Data.configServer.maxPlayer, true)
                 // 避免同步爆炸, 给自身设置一个隐藏队伍
-                GameEngine.netEngine.z = n.k(-1)
+                GameEngine.netEngine.field_5848 = class_324.method_526(-1)
 
                 // 不能在启动前设置, 因为每次会变
                 // 设置客户端UUID, 避免Admin/ban等不能持久化
@@ -108,9 +108,9 @@ internal class LinkGameNet: AbstractLinkGameNet {
                 if (Data.neverEnd) {
                     val mapPlayer = "Valley Arena (10p) [by_uber]@[z;p10]"
                     val data = mapPlayer.split("@").toTypedArray()
-                    GameEngine.netEngine.az = "maps/skirmish/${data[1]}${data[0]}.tmx"
-                    GameEngine.netEngine.ay.a = ai.a
-                    GameEngine.netEngine.ay.b = "${data[1]}${data[0]}.tmx"
+                    GameEngine.netEngine.field_5875 = "maps/skirmish/${data[1]}${data[0]}.tmx"
+                    GameEngine.netEngine.field_5874.field_6012 = class_1016.field_6029
+                    GameEngine.netEngine.field_5874.field_6013 = "${data[1]}${data[0]}.tmx"
                     GameEngine.data.room.maps.mapName = data[0]
                     GameEngine.data.room.maps.mapType = GameMaps.MapType.DefaultMap
                     GameEngine.data.gameScriptMultiPlayer.multiplayerStart()
@@ -125,7 +125,7 @@ internal class LinkGameNet: AbstractLinkGameNet {
         GameEngine.data.room.call.killAllPlayer()
 
         // 恢复
-        GameEngine.netEngine.z = null
+        GameEngine.netEngine.field_5848 = null
 
         GameEngine.root.multiplayer.disconnect("Close Server")
     }

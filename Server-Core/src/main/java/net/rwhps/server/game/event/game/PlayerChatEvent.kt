@@ -12,7 +12,6 @@ package net.rwhps.server.game.event.game
 import net.rwhps.server.game.event.core.AbstractEventImpl
 import net.rwhps.server.game.headless.core.AbstractGameModule
 import net.rwhps.server.game.player.PlayerHess
-import net.rwhps.server.util.annotations.core.EventOnlyRead
 
 /**
  * 玩家发送聊天消息时事件
@@ -20,8 +19,10 @@ import net.rwhps.server.util.annotations.core.EventOnlyRead
  * @date 2023/7/5 13:45
  * @author Dr (dr@der.kim)
  */
-@EventOnlyRead
 class PlayerChatEvent(
     override val gameModule: AbstractGameModule,
     val player: PlayerHess, val message: String
-): AbstractEventImpl
+) : AbstractEventImpl {
+    @JvmField
+    var canceled = false
+}

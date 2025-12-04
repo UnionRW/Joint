@@ -9,6 +9,7 @@
 
 package net.rwhps.server.dependent.redirections.game
 
+import com.corrodinggames.rts.union.gameFramework.e.class_901
 import net.rwhps.asm.data.MethodTypeInfoValue
 import net.rwhps.server.data.global.Data
 import net.rwhps.server.dependent.redirections.MainRedirections
@@ -85,26 +86,26 @@ class FileLoaderRedirections: MainRedirections {
 
         /* 屏蔽游戏设置保存 */
         @GameSimulationLayer.GameSimulationLayer_KeyWords("preferences.ini")
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/SettingsEngine", "saveToFileSystem", "()Z")) { obj: Any, _: String, _: Class<*>, _: Array<out Any?> ->
-            "com.corrodinggames.rts.gameFramework.l".toClassAutoLoader(obj)!!.findMethod("b", String::class.java)!!
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/SettingsEngine", "saveToFileSystem", "()Z")) { obj: Any, _: String, _: Class<*>, _: Array<out Any?> ->
+            "com.corrodinggames.rts.union.gameFramework.class_1061".toClassAutoLoader(obj)!!.findMethod("method_3031", String::class.java)!!
                 .invoke(null, "Saving settings: RW-HPS(ASM)")
             return@redirectR true
         }
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/SettingsEngine", "loadFromFileSystem", "()V"))
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/SettingsEngine", "loadFromFileSystem", "()V"))
 
         // 重定向部分文件系统 (mods maps replay)
         val filePath = FileUtils.getPath(Data.ServerDataPath) + "/"
         // 设置 重定向文件PATH类
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/e/c", "f", "()Ljava/lang/String;")) { _: Any, _: String, _: Class<*>, _: Array<out Any?> ->
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/e/class_901", "f", "()Ljava/lang/String;")) { _: Any, _: String, _: Class<*>, _: Array<out Any?> ->
             filePath
         }
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/e/c", "b", "()Ljava/lang/String;")) { _: Any, _: String, _: Class<*>, _: Array<out Any?> ->
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/e/class_901", "method_2203", "()Ljava/lang/String;")) { _: Any, _: String, _: Class<*>, _: Array<out Any?> ->
             filePath
         }
 
         // 重定向资源文件系统 (Res FileSystem)
         val resAndAssetsPath = FileUtils.getPath(Data.Plugin_GameCore_Data_Path) + "/"
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/e/c", "a", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")) { _: Any, _: String, _: Class<*>, args: Array<out Any?> ->
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/e/class_901", "a", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")) { _: Any, _: String, _: Class<*>, args: Array<out Any?> ->
             val listFiles: Seq<File> = FileUtils.getFolder(Data.Plugin_GameCore_Data_Path).toFolder(args[0].toString()).fileList
             for (file in listFiles) {
                 val name: String = FileName.getFileNameNoSuffix(file.name)
@@ -122,7 +123,7 @@ class FileLoaderRedirections: MainRedirections {
         }
 
         // 重定向 流系统
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/e/c", "i", "(Ljava/lang/String;)Lcom/corrodinggames/rts/gameFramework/utility/j;")) { obj: Any, _: String, _: Class<*>, args: Array<out Any?> ->
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/e/class_901", "method_2214", "(Ljava/lang/String;)Lcom/corrodinggames/rts/union/gameFramework/utility/class_1322;")) { obj: Any, _: String, _: Class<*>, args: Array<out Any?> ->
             var str = args[0].toString().replace(resAndAssetsPath, "").replace("\\", "/")
 
             if (str.startsWith("assets/") || str.startsWith("assets\\")) {
@@ -146,8 +147,8 @@ class FileLoaderRedirections: MainRedirections {
             }
         }
 
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/e/c", "f", "(Ljava/lang/String;)Ljava/lang/String;")) { obj: Any, _: String, _: Class<*>, args: Array<out Any?> ->
-            var d: String = (run_FileSystem(obj, "d", String::class.java).invoke(obj, args[0].toString()) as String).replace("\\", "/")
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/e/class_901", "method_2212", "(Ljava/lang/String;)Ljava/lang/String;")) { obj: Any, _: String, _: Class<*>, args: Array<out Any?> ->
+            var d: String = (run_FileSystem(obj, "method_2210", String::class.java).invoke(obj, args[0].toString()) as String).replace("\\", "/")
 
             val path = args[0].toString().replace("\\", "/")
             // 跳过已经绝对路径的
@@ -185,7 +186,7 @@ class FileLoaderRedirections: MainRedirections {
                 return resAndAssetsPath + path
             }
 
-            val cc = ReflectionUtils.findField(Class.forName("com.corrodinggames.rts.gameFramework.l", true, obj::class.java.classLoader), "aU", Boolean::class.java)!!
+            val cc = ReflectionUtils.findField(Class.forName("com.corrodinggames.rts.union.gameFramework.class_1061", true, obj::class.java.classLoader), "field_6304", Boolean::class.java)!!
 
             return@redirectR if (cc[null] as Boolean) {
                 if (d.startsWith("/SD/rusted_warfare_maps")) {
@@ -201,7 +202,7 @@ class FileLoaderRedirections: MainRedirections {
                         substring = substring.substring("rustedWarfare/".length)
                     }
                     overrideModLoad(substring)
-                } else if ((run_FileSystem(obj, "c", String::class.java).invoke(obj, d) as Boolean)) {
+                } else if ((run_FileSystem(obj, "method_2207", String::class.java).invoke(obj, d) as Boolean)) {
                     d
                 } else {
                     resAndAssetsPath + "assets/$d"
@@ -221,14 +222,14 @@ class FileLoaderRedirections: MainRedirections {
 
     private fun run_FileSystem(obj: Any, method: String, vararg paramTypes: Class<*>): Method {
         return ReflectionUtils.findMethod(
-                Class.forName("com.corrodinggames.rts.gameFramework.e.c", true, obj::class.java.classLoader), method, *paramTypes
+                Class.forName("com.corrodinggames.rts.union.gameFramework.e.class_901", true, obj::class.java.classLoader), method, *paramTypes
         )!!
     }
 
     // J
     private fun findNewClass_AssetInputStream(obj: Any, vararg paramTypes: Class<*>): Constructor<*> {
         return ReflectionUtils.accessibleConstructor(
-                Class.forName("com.corrodinggames.rts.gameFramework.utility.j", true, obj::class.java.classLoader), *paramTypes
+                Class.forName("com.corrodinggames.rts.union.gameFramework.utility.class_1322", true, obj::class.java.classLoader), *paramTypes
         )
     }
 

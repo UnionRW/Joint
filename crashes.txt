@@ -1,0 +1,12 @@
+
+fatal (at 2025-12-04 17:29:31.043 - 1.15)
+java.lang.NullPointerException
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:144)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:106)
+	at com.corrodinggames.rts.java.e.b(SourceFile:1685)
+	at com.corrodinggames.rts.java.u.init(SourceFile:158)
+	at org.newdawn.slick.AppGameContainer.setup(AppGameContainer.java:393)
+	at org.newdawn.slick.AppGameContainer.start(AppGameContainer.java:317)
+	at com.corrodinggames.rts.java.j.run(SourceFile:1464)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+

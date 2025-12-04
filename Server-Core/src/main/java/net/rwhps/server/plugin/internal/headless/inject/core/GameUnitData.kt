@@ -9,10 +9,11 @@
 
 package net.rwhps.server.plugin.internal.headless.inject.core
 
-import com.corrodinggames.rts.game.units.custom.ag
-import com.corrodinggames.rts.game.units.custom.l
-import com.corrodinggames.rts.game.units.y
-import com.corrodinggames.rts.gameFramework.w
+import com.corrodinggames.rts.union.game.units.class_409
+import com.corrodinggames.rts.union.game.units.custom.class_472
+import com.corrodinggames.rts.union.game.units.custom.class_581
+import com.corrodinggames.rts.union.gameFramework.class_773
+import com.corrodinggames.rts.union.gameFramework.i.class_992
 import net.rwhps.server.game.headless.core.AbstractGameUnitData
 import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.struct.map.ObjectMap
@@ -23,30 +24,30 @@ import net.rwhps.server.util.log.Log
 /**
  * @author Dr (dr@der.kim)
  */
-internal class GameUnitData: AbstractGameUnitData {
+internal class GameUnitData : AbstractGameUnitData {
     override var useMod: Boolean
-        get() = GameEngine.netEngine.o
+        get() = GameEngine.netEngine.field_5975
         set(value) {
-            GameEngine.netEngine.o = value
+            GameEngine.netEngine.field_5975 = value
         }
 
     override fun reloadUnitData() {
-        ag.h()
+        class_472.method_1153()
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun getUnitData(coreName: String): OrderedMap<String, ObjectMap<String, Int>> {
         val modsData = OrderedMap<String, ObjectMap<String, Int>>()
-        val gameUnitDataList: List<l> = l.c as List<l>
+        val gameUnitDataList: List<class_581> = class_581.field_3286 as List<class_581>
 
         for (data in gameUnitDataList) {
-            val group = data.t() ?: coreName
+            val group = data.method_1499() ?: coreName
             if (modsData.containsKey(group)) {
-                modsData[group]!![data.M] = data.H
+                modsData[group]!![data.field_3154] = data.field_3149
             } else {
                 val cache = ObjectMap<String, Int>()
                 modsData[group] = cache
-                cache[data.M] = data.H
+                cache[data.field_3154] = data.field_3149
             }
         }
 
@@ -56,9 +57,9 @@ internal class GameUnitData: AbstractGameUnitData {
     @Suppress("UNCHECKED_CAST")
     override fun getRwModLoadInfo(): Seq<String> {
         return Seq<String>().apply {
-            for (a in (GameEngine.gameEngine.bZ::class.java.findField("e")!![GameEngine.gameEngine.bZ]
-                    as ArrayList<com.corrodinggames.rts.gameFramework.i.b>)) {
-                a.U.iterator().forEach {
+            for (a in (GameEngine.gameEngine.field_6354::class.java.findField("field_5783")!![GameEngine.gameEngine.field_6354]
+                    as ArrayList<class_992>)) {
+                a.field_5803.iterator().forEach {
                     add(it.toString())
                 }
             }
@@ -66,12 +67,12 @@ internal class GameUnitData: AbstractGameUnitData {
     }
 
     fun kill() {
-        for (fastUnit in w.er.a()) {
-            if (fastUnit is y) {
-                w.er.remove(fastUnit)
-                GameEngine.gameEngine.bU.a(fastUnit)
-                Log.clog(fastUnit.r().i())
-                GameEngine.data.room.call.sendSystemMessage("删掉了一个单位: ${fastUnit.r().i()}")
+        for (fastUnit in class_773.field_4230.a()) {
+            if (fastUnit is class_409) {
+                class_773.field_4230.remove(fastUnit)
+                GameEngine.gameEngine.field_6349.method_3131(fastUnit)
+                Log.clog(fastUnit.method_1059().method_1660())
+                GameEngine.data.room.call.sendSystemMessage("删掉了一个单位: ${fastUnit.method_1059().method_1660()}")
             }
         }
         // 让 Core 完成记载

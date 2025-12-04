@@ -11,7 +11,7 @@ package net.rwhps.server.plugin.internal.headless.inject.core
 
 import net.rwhps.server.game.headless.core.AbstractGameFast
 import net.rwhps.server.plugin.internal.headless.inject.lib.PlayerConnectX
-import com.corrodinggames.rts.gameFramework.j.au as Packet
+import com.corrodinggames.rts.union.gameFramework.j.class_1032 as Packet
 
 /**
  * @author Dr (dr@der.kim)
@@ -19,14 +19,14 @@ import com.corrodinggames.rts.gameFramework.j.au as Packet
 class GameFast: AbstractGameFast {
     override fun filteredPacket(packet: Any): Boolean {
         if (packet is Packet) {
-            val playerConnect = packet.a as PlayerConnectX?
-            val type = packet.b
+            val playerConnect = packet.field_6123 as PlayerConnectX?
+            val type = packet.field_6124
 
             if (type == 140 && playerConnect != null) {
                 return true
             }
 
-            if (GameEngine.netEngine.C && playerConnect != null && !playerConnect.p && type != 105 && type != 110 && type != 111 && type != 108 && type != 160) {
+            if (GameEngine.netEngine.field_5851 && playerConnect != null && !playerConnect.field_6181 && type != 105 && type != 110 && type != 111 && type != 108 && type != 160) {
                 return true
             }
             return false

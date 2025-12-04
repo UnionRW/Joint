@@ -51,11 +51,11 @@ open class HeadlessTypeConnect: TypeConnect {
         val netEngine = con.playerConnectX.netEngine
 
         val playerConnect = PlayerConnectX(netEngine, connectionAgreement)
-        playerConnect.h = false // UDP
-        playerConnect.i = false // UDP
-        playerConnect.d()
+        playerConnect.field_6173 = false // UDP
+        playerConnect.field_6174 = false // UDP
+        playerConnect.method_2900()
 
-        netEngine.aM.add(playerConnect)
+        netEngine.field_5888.add(playerConnect)
 
         return HeadlessTypeConnect(GameVersionServer(playerConnect))
     }

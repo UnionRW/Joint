@@ -29,23 +29,23 @@ class NetPacketRedirections: MainRedirections {
     override fun register() {
         // Intercept packet processing (Ineffective, there are alternatives)
         @GameSimulationLayer.GameSimulationLayer_KeyWords("filtered packet")
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/j/ad00", "b", "(Lcom/corrodinggames/rts/gameFramework/j/au;)Z")) { _: Any, _: String, _: Class<*>, args: Array<out Any?> ->
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/j/ad00", "b", "(Lcom/corrodinggames/rts/gameFramework/j/au;)Z")) { _: Any, _: String, _: Class<*>, args: Array<out Any?> ->
             return@redirectR HeadlessModuleManage.hps.gameFast.filteredPacket(args[0]!!)
         }
 
         /* UUID 覆盖 */
         @GameSimulationLayer.GameSimulationLayer_KeyWords("serverUUID==null")
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/j/ad", "Z", "()Ljava/lang/String;")) { _: Any, _: String, _: Class<*>, _: Array<out Any?> ->
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/j/class_1001", "Z", "()Ljava/lang/String;")) { _: Any, _: String, _: Class<*>, _: Array<out Any?> ->
             return@redirectR Data.core.serverHessUuid
         }
 
         // Invalidate the listing service that comes with the game
         @GameSimulationLayer.GameSimulationLayer_KeyWords("StartCreateOnMasterServer")
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/j/u", "run", "()V"))
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/j/n", "a", "()V"))
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/j/n", "b", "()V"))
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/j/n", "c", "()V"))
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/j/n", "d", "()V"))
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/j/class_1056", "run", "()V"))
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/j/class_1047", "method_2932", "()V"))
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/j/class_1047", "method_2946", "()V"))
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/j/class_1047", "method_2949", "()V"))
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/j/class_1047", "method_2952", "()V"))
 
         // Invalidate the RUDP service that comes with the game
         @GameSimulationLayer.GameSimulationLayer_KeyWords("ReliableServerSocket")
@@ -53,9 +53,9 @@ class NetPacketRedirections: MainRedirections {
 
         // Remove the official Socket Launcher
         @GameSimulationLayer.GameSimulationLayer_KeyWords("isIpAllowed: inetAddress==null")
-        addAllReplace("com/corrodinggames/rts/gameFramework/j/ao")
-        addAllReplace("com/corrodinggames/rts/gameFramework/j/d")
-        addAllReplace("com/corrodinggames/rts/gameFramework/j/e")
+        addAllReplace("com/corrodinggames/rts/union/gameFramework/j/class_1026")
+        addAllReplace("com/corrodinggames/rts/union/gameFramework/j/class_1038")
+        addAllReplace("com/corrodinggames/rts/union/gameFramework/j/class_1039")
 
     }
 }

@@ -73,7 +73,7 @@ class GameMainRedirections: MainRedirections {
 //        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/java/s", "a", "(Ljava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;"), BasicParamsValueRedirections.ReturnSecondParams)
 //        // 渲染
 //        //addAllReplace("com/corrodinggames/rts/gameFramework/m/e")
-        addAllReplace("com/corrodinggames/rts/gameFramework/am", true)
+        addAllReplace("com/corrodinggames/rts/union/gameFramework/class_789", true)
 //        // 渲染
 //        addAllReplace("com/corrodinggames/rts/java/e", true)
 
@@ -134,7 +134,7 @@ class GameMainRedirections: MainRedirections {
 
         // 保存Replay时触发
         @GameSimulationLayer.GameSimulationLayer_KeyWords("Recording replay to:")
-        redirectL(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/ba", "d", "(Ljava/lang/String;)V", true)) { obj: Any?, _: String, args: Array<out Any?> ->
+        redirectL(MethodTypeInfoValue("com/corrodinggames/rts/union/gameFramework/class_862", "method_2031", "(Ljava/lang/String;)V", true)) { obj: Any?, _: String, args: Array<out Any?> ->
             Log.clog("Save Replay to: {}", args[0].also { replayFileName ->
                 HeadlessModuleManage.hessLoaderMap[obj!!::class.java.classLoader.toString()]!!.room.replayFileName = replayFileName.toString()
             }!!)
