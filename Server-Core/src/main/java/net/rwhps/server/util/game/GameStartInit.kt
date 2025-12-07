@@ -18,6 +18,7 @@ import net.rwhps.server.util.classload.GameModularReusableLoadClass
 import net.rwhps.server.util.compression.CompressionDecoderUtils
 import net.rwhps.server.util.file.FileUtils
 import net.rwhps.server.util.log.Log
+import java.lang.instrument.ClassFileTransformer
 import java.lang.reflect.Method
 import kotlin.concurrent.thread
 
@@ -33,7 +34,10 @@ object GameStartInit {
         Res("408aa02d8566a771c5ad97caf9f1f701", gameCorePath.toFile("Game-Res.7z")),
         Fonts("e27f86783a04bb6c7bc7b4388f8c8539", gameCorePath.toFile("Game-Fonts.7z")),
         Assets("7c50a14a5d2c6570e0b815d146c446f0", gameCorePath.toFile("Game-Assets.7z")),
-        GameModularReusableClass("823515512b13234b6607927b599acbf7", gameCorePath.toFile("GameModularReusableClass.bin"))
+        GameModularReusableClass(
+            "823515512b13234b6607927b599acbf7",
+            gameCorePath.toFile("GameModularReusableClass.bin")
+        )
     }
 
     fun init(load: GameModularReusableLoadClass): Boolean {
@@ -57,7 +61,13 @@ object GameStartInit {
                         file.delete()
                     }
 
-                    DownloadManage.addDownloadTask(DownloadManage.DownloadData(Data.urlData.readString("Get.Core.ResDown") + file.name, file, progressFlag = true)).also {
+                    DownloadManage.addDownloadTask(
+                        DownloadManage.DownloadData(
+                            Data.urlData.readString("Get.Core.ResDown") + file.name,
+                            file,
+                            progressFlag = true
+                        )
+                    ).also {
                         Log.clog("$resName : {0}", it)
                     }
                     file.setReadOnly()
@@ -79,24 +89,32 @@ object GameStartInit {
             resTask(ResMD5.Assets.fileUtils, "assets", true)
             resTask(ResMD5.Fonts.fileUtils, "fonts", false)
 
-            if (GameStartInit::class.java.getResourceAsStream("/libs.zip") == null) {
-                if (ResMD5.GameModularReusableClass.fileUtils.notExists()) {
-                    resTask(ResMD5.GameModularReusableClass.fileUtils, "gameModularReusableClassFile", false)
-                }
-                load.readData(ResMD5.GameModularReusableClass.fileUtils)
-            } else {
-                // 加载游戏依赖
-                CompressionDecoderUtils.zipAllReadStream(GameStartInit::class.java.getResourceAsStream("/libs.zip")!!).use {
-                    it.getSpecifiedSuffixInThePackage("jar", true).eachAll { _, v ->
-                        load.addSourceJar(v)
-                    }
-                }
-                // 一些必须的覆盖 - 解决Summon爆炸
-                //load.addClassBytes("com.corrodinggames.rts.gameFramework.c", CommandArrayListCoverSyncList.build(), true)
+            val libs = arrayOf(
+                "Hook.jar",
+                "android.jar",
+                "game-lib.jar",
+                "httpclient-4.3.3.jar",
+                "httpcore-4.3.2.jar",
+                "lwjgl.jar",
+                "slick.jar"
+            )
 
-                //TODO Save GameModularReusableClass
-                //load.saveData(FileUtils.getFolder(Data.ServerDataPath).toFile("GameModularReusableClass.bin"))
+            libs.forEach { lib ->
+                run {
+                    load.addSourceJar(
+                        GameStartInit::class.java.getResourceAsStream("/$lib")
+                            ?: throw RuntimeException("Failed to load lib: $lib")
+                    )
+                }
             }
+            load.hookTransformer = load.findClass("cn.tesseract.union.UnionTransformer")?.getConstructor()
+                ?.newInstance() as ClassFileTransformer?
+
+            // 一些必须的覆盖 - 解决Summon爆炸
+            //load.addClassBytes("com.corrodinggames.rts.gameFramework.c", CommandArrayListCoverSyncList.build(), true)
+
+            //TODO Save GameModularReusableClass
+            //load.saveData(FileUtils.getFolder(Data.ServerDataPath).toFile("GameModularReusableClass.bin"))
         } catch (e: Exception) {
             Log.fatal(e)
             return false
@@ -113,12 +131,13 @@ object GameStartInit {
             CompressionDecoderUtils.zipAllReadStream(FileUtils.getMyCoreJarStream()).use {
                 it.getZipAllBytes().eachAll { k, v ->
                     if (
-                        // 注入接口
+                    // 注入接口
                         k.startsWith(HessClassPathProperties.headlessPath.replace(".", "/")) ||
                         // 注入 ASM 的 FastClass, 使其缓解变量问题
                         k.startsWith(HessClassPathProperties.fastASMClassPath.replace(".", "/")) ||
                         // 覆写游戏的一些Class
-                        k.startsWith(HessClassPathProperties.GameHessPath.replace(".", "/"))) {
+                        k.startsWith(HessClassPathProperties.GameHessPath.replace(".", "/"))
+                    ) {
                         val name = k.replace(".class", "")
                         load.addClassBytes(name.replace("/", "."), v)
                     }

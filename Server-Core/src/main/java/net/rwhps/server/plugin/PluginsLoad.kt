@@ -11,12 +11,12 @@ package net.rwhps.server.plugin
 
 import net.rwhps.server.data.bean.internal.BeanPluginInfo
 import net.rwhps.server.data.global.Data
-import net.rwhps.server.util.file.json.Json
 import net.rwhps.server.dependent.LibraryManager
 import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.util.IsUtils
 import net.rwhps.server.util.compression.CompressionDecoderUtils
 import net.rwhps.server.util.file.FileUtils
+import net.rwhps.server.util.file.json.Json
 import net.rwhps.server.util.inline.toGson
 import net.rwhps.server.util.log.Log
 import net.rwhps.server.util.log.Log.error
@@ -34,8 +34,6 @@ class PluginsLoad {
         val data = Seq<PluginLoadData>()
         val dataName = Seq<String>()
         val dataImport = Seq<PluginImportData>()
-
-        val scriptContext = JavaScriptPluginGlobalContext()
 
         for (file in fileList) {
             val zip = CompressionDecoderUtils.zip(file)
@@ -58,29 +56,17 @@ class PluginsLoad {
                     continue
                 }
                 if (IsUtils.isBlank(pluginInfo.import)) {
-                    val mainPlugin: Plugin
-                    if (pluginInfo.main.endsWith("js", true)) {
-                        val mainJs = zip.getZipNameInputStream(pluginInfo.main)
-                        if (mainJs == null) {
-                            error("Invalid JavaScriptPlugin Main", pluginInfo.main)
-                            continue
-                        }
-                        if (pluginInfo.internalName.isBlank() ||
-                            pluginInfo.internalName.replace("^[a-z0-9A-Z]+\$".toRegex(), "").isNotBlank()
-                            ) {
-                            error("Invalid Internal Name Main", pluginInfo.main)
-                            continue
-                        }
-                        scriptContext.addESMPlugin(pluginInfo, zip.getZipAllBytes())
-                        continue
-                    } else {
-                        mainPlugin = loadClass(file, pluginInfo.main)
-                    }
+                    val mainPlugin: Plugin = loadClass(file, pluginInfo.main)
 
                     data.add(
-                            PluginLoadData(
-                                    pluginInfo.name, pluginInfo.internalName, pluginInfo.author, pluginInfo.description, pluginInfo.version, mainPlugin
-                            )
+                        PluginLoadData(
+                            pluginInfo.name,
+                            pluginInfo.internalName,
+                            pluginInfo.author,
+                            pluginInfo.description,
+                            pluginInfo.version,
+                            mainPlugin
+                        )
                     )
                     dataName.add(pluginInfo.name)
                 } else {
@@ -102,9 +88,14 @@ class PluginsLoad {
                     try {
                         val mainPlugin = loadClass(e.file, e.pluginData.main)
                         data.add(
-                                PluginLoadData(
-                                        e.pluginData.name, e.pluginData.internalName, e.pluginData.author, e.pluginData.description, e.pluginData.version, mainPlugin
-                                )
+                            PluginLoadData(
+                                e.pluginData.name,
+                                e.pluginData.internalName,
+                                e.pluginData.author,
+                                e.pluginData.description,
+                                e.pluginData.version,
+                                mainPlugin
+                            )
                         )
                         dataName.add(e.pluginData.name)
                         dataImport.remove(e)
@@ -116,11 +107,6 @@ class PluginsLoad {
             i++
         }
 
-        scriptContext.loadESMPlugins().eachAll {
-            data.add(it)
-            dataName.add(it.name)
-        }
-
         return data
     }
 
@@ -128,7 +114,12 @@ class PluginsLoad {
     private fun loadImports(importsJson: Seq<Json>) {
         val lib = LibraryManager()
         importsJson.eachAll {
-            lib.implementation(it.getString("group"), it.getString("module"), it.getString("version"), it.getString("classifier"))
+            lib.implementation(
+                it.getString("group"),
+                it.getString("module"),
+                it.getString("version"),
+                it.getString("classifier")
+            )
         }
         lib.loadToClassLoader()
     }

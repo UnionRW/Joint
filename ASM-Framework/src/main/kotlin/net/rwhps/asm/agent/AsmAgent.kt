@@ -20,7 +20,7 @@ import net.rwhps.asm.transformer.ReplaceImpl
 import net.rwhps.asm.util.transformer.AsmUtil
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
-import java.io.FileOutputStream
+import java.io.*
 import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.IllegalClassFormatException
 import java.lang.instrument.Instrumentation
@@ -29,7 +29,7 @@ import java.security.ProtectionDomain
 /**
  * A JavaAgent calling the [ReplaceImpl.AllMethodsTransformer] and [ReplaceImpl.PartialMethodTransformer].
  */
-class AsmAgent: ClassFileTransformer, AsmCore() {
+class AsmAgent : ClassFileTransformer, AsmCore() {
 
     private val transformer: Transformer = ReplaceImpl.AllMethodsTransformer()
     private val partialMethodTransformer: Transformer = ReplaceImpl.PartialMethodTransformer()
@@ -57,7 +57,7 @@ class AsmAgent: ClassFileTransformer, AsmCore() {
      *                              the class being redefined or retransformed;
      *                              if this is a class load, {@code null}
      * @param protectionDomain      the protection domain of the class being defined or redefined
-     * @param classfileBuffer       the input byte buffer in class file format - must not be modified
+     * @param data       the input byte buffer in class file format - must not be modified
      *
      * @throws IllegalClassFormatException
      *         if the input does not represent a well-formed class file
@@ -97,7 +97,10 @@ class AsmAgent: ClassFileTransformer, AsmCore() {
             if (node == null) {
                 node = AsmUtil.read(classfileBuffer)
             }
-            listenerMethodTransformer.transform(node, ListenerRedirectionsDataManager.partialListenerMethodName[className])
+            listenerMethodTransformer.transform(
+                node,
+                ListenerRedirectionsDataManager.partialListenerMethodName[className]
+            )
         }
 
         if (RemoveRedirectionsDataManager.partialClassPathCache.contains(className)) {

@@ -35,9 +35,9 @@ class LinkGameServerData : AbstractLinkGameServerData {
 
     override var sharedcontrol: Boolean
         set(value) {
-            GameEngine.netEngine.field_5874.l = value
+            GameEngine.netEngine.field_5874.field_6023 = value
         }
-        get() = GameEngine.netEngine.field_5874.l
+        get() = GameEngine.netEngine.field_5874.field_6023
 
     override var fog: Int
         set(value) {
@@ -53,9 +53,9 @@ class LinkGameServerData : AbstractLinkGameServerData {
 
     override var credits: Int
         set(value) {
-            GameEngine.netEngine.field_5874.c = value
+            GameEngine.netEngine.field_5874.field_6014 = value
         }
-        get() = GameEngine.netEngine.field_5874.c
+        get() = GameEngine.netEngine.field_5874.field_6014
 
     override var aiDifficuld: Int
         set(value) {
@@ -71,9 +71,9 @@ class LinkGameServerData : AbstractLinkGameServerData {
 
     override var startingunits: Int
         set(value) {
-            GameEngine.netEngine.field_5874.g = value
+            GameEngine.netEngine.field_5874.field_6018 = value
         }
-        get() = GameEngine.netEngine.field_5874.g
+        get() = GameEngine.netEngine.field_5874.field_6018
 
     override fun getPlayerData(position: Int): AbstractLinkPlayerData {
         return PrivateClassLinkPlayer(WaitResultUtils.waitResult { class_324.method_526(position) }

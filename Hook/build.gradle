@@ -1,0 +1,23 @@
+configurations {
+    embed
+}
+
+dependencies {
+    compileOnly("org.ow2.asm:asm:9.7.1")
+    compileOnly("org.ow2.asm:asm-tree:9.7.1")
+    compileOnly("org.ow2.asm:asm-commons:9.7.1")
+    compileOnly("commons-io:commons-io:2.17.0")
+    compileOnly("org.mozilla:rhino:1.7.15")
+
+    embed("commons-io:commons-io:2.17.0")
+    embed("org.mozilla:rhino:1.7.15")
+
+    compileOnly files('../Server-Core/libs/game-lib.jar')
+    compileOnly(project(":Server-Core"))
+    compileOnly(project(":ASM-Framework"))
+}
+
+jar {
+    from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

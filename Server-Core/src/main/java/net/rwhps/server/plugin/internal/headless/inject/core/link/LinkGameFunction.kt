@@ -25,7 +25,7 @@ internal class LinkGameFunction: AbstractLinkGameFunction {
                 GameEngine.netEngine.method_2756(false, false, true)
             }
         } catch (e: Exception) {
-            Log.error(e.cause!!)
+            Log.error(e)
         }
     }
 

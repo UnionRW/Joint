@@ -63,15 +63,18 @@ dependencies {
 
     implementation("it.unimi.dsi:fastutil-core:8.5.13")
 
+    implementation("commons-io:commons-io:2.17.0")
+
     //compileOnlyAndTest("org.graalvm.js:js:${Versions.graalvmVersion}")
     //compileOnlyAndTest("org.graalvm.sdk:graal-sdk:${Versions.graalvmVersion}")
-    implementation(fileTree(mapOf("dir" to "libs", "include" to "wasm.jar")))
+    //implementation(fileTree(mapOf("dir" to "libs", "include" to "wasm.jar")))
 
     testApi("org.junit.jupiter:junit-jupiter-engine:5.10.1")
 }
 
 tasks.jar {
     project.makeDependTree()
+    from(fileTree(mapOf("dir" to "libs", "include" to "game-lib.jar")))
 
     manifest {
         attributes(mapOf("Implementation-Title" to "RW-HPS"))

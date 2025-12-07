@@ -1,0 +1,4 @@
+cn.tesseract.union.hook.CommandHook
+cn.tesseract.union.hook.EventHook
+cn.tesseract.union.hook.ResyncHook
+cn.tesseract.union.hook.ScriptHook

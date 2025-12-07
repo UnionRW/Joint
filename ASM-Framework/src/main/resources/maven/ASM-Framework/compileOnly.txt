@@ -1,2 +1,3 @@
-jar:org.ow2.asm:asm-tree:9.7:null
-jar:org.ow2.asm:asm:9.7:null
+jar:org.ow2.asm:asm-commons:9.7.1:null
+jar:org.ow2.asm:asm-tree:9.7.1:null
+jar:org.ow2.asm:asm:9.7.1:null

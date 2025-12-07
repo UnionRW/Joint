@@ -16,6 +16,7 @@ import net.rwhps.server.util.inline.toClass
 import net.rwhps.server.util.math.RandomUtils
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import java.lang.instrument.ClassFileTransformer
 
 /**
  * Broken Java parent delegation mechanism
@@ -39,7 +40,8 @@ open class GameModularLoadClass(
     private val mainClassLoader: ClassLoader,
     private val jdkClassLoader: ClassLoader,
     private val classPathMap: OrderedMap<String, ByteArray> = OrderedMap()
-): ClassLoader() {
+) : ClassLoader() {
+    var hookTransformer: ClassFileTransformer? = null
     private val hashCode = Integer.toHexString(super.hashCode())
 
     private val name = "${RandomUtils.getRandomIetterString(5)}:$hashCode"
@@ -102,6 +104,10 @@ open class GameModularLoadClass(
         }
         classPathMap[name.replace(".", "/")] = bytes
         return name.toClass(this)
+    }
+
+    fun getClassBytes(name: String): ByteArray? {
+        return classPathMap[name]
     }
 
     /**
@@ -185,7 +191,14 @@ open class GameModularLoadClass(
      * @return ByteArray
      */
     protected open fun asmClass(className: String, classfileBuffer: ByteArray): ByteArray {
-        return AsmCore.transform(this, className, classfileBuffer)
+        val data = if (hookTransformer == null) classfileBuffer else hookTransformer!!.transform(
+            this,
+            className,
+            null,
+            null,
+            classfileBuffer
+        )
+        return AsmCore.transform(this, className, data)
     }
 
     override fun getName(): String {

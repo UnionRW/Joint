@@ -64,6 +64,7 @@ tasks.jar {
         attributes(mapOf("Build-Jar-Time" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date().time)))
     }
 
+    from(project(":Hook").tasks.getByName<Jar>("jar").archiveFile)
     from(configurations.runtimeClasspath.get().map {
         if (it.isDirectory) it else zipTree(it)
     })
