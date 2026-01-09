@@ -48,6 +48,7 @@ data class BeanCoreConfig(
     val subtitle: String = "",
     /** Automatically after starting UPLIST */
     val autoUpList: Boolean = false,
+    val autoChangeMap: Int = -1,
 
     /** ip多语言支持 */
     val ipCheckMultiLanguageSupport: Boolean = true,

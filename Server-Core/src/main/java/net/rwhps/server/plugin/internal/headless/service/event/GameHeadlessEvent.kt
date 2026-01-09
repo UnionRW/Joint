@@ -9,23 +9,17 @@
 
 package net.rwhps.server.plugin.internal.headless.service.event
 
-import net.rwhps.server.data.global.Data
-import net.rwhps.server.data.global.Statisticians
 import net.rwhps.server.game.event.core.EventListenerHost
 import net.rwhps.server.game.event.game.PlayerJoinEvent
 import net.rwhps.server.game.event.game.PlayerOperationUnitEvent
-import net.rwhps.server.game.event.global.ServerHessLoadEvent
-import net.rwhps.server.game.manage.HeadlessModuleManage
-import net.rwhps.server.game.manage.ModManage
 import net.rwhps.server.util.annotations.core.EventListenerHandler
-import net.rwhps.server.util.log.Log
 
-class GameHeadlessEvent: EventListenerHost {
+class GameHeadlessEvent : EventListenerHost {
     @EventListenerHandler
     fun registerPlayerJoin(playerJoinEvent: PlayerJoinEvent) {
         playerJoinEvent.gameModule.room.apply {
             if (isStartGame) {
-                if (sync) {
+                if (!sync) {
                     playerJoinEvent.player.kickPlayer("[Sync Lock] 这个房间拒绝重连")
                     return
                 }

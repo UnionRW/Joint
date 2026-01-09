@@ -49,5 +49,8 @@ class GameHeadlessEventGlobal: EventListenerHost {
         if (Data.config.autoUpList) {
             Data.SERVER_COMMAND.handleMessage("uplist add", Data.defPrint)
         }
+        if (Data.config.autoChangeMap != -1) {
+            Data.SERVER_COMMAND.handleMessage("mapchange", Data.defPrint)
+        }
     }
 }

@@ -36,7 +36,7 @@ data class BeanServerConfig(
     /** 服务器最大人数 */
     val maxPlayer: Int = 10,
     /** only Admin (Auto) */
-    val oneAdmin: Boolean = true,
+    val oneAdmin: Boolean = false,
 
     /** 服务器最小Start人数 (-1 为禁用) */
     val startMinPlayerSize: Int = -1,

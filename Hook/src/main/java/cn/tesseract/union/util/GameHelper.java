@@ -1,7 +1,6 @@
 package cn.tesseract.union.util;
 
 import com.corrodinggames.librocket.scripts.Root;
-import com.corrodinggames.librocket.scripts.ScriptEngine;
 import com.corrodinggames.rts.union.game.b.class_299;
 import com.corrodinggames.rts.union.game.class_324;
 import com.corrodinggames.rts.union.game.units.class_426;
@@ -28,6 +27,10 @@ public class GameHelper {
 
     public static class_426 getWaypointUnit(class_706 waypoint) {
         return waypoint.field_3934 == null ? getUnitById(waypoint.field_3933) : waypoint.field_3934;
+    }
+
+    public static class_324 getUserPlayer() {
+        return game.field_6373;
     }
 
     public static boolean isUserPlayer(class_324 player) {

@@ -21,14 +21,10 @@ import net.rwhps.server.game.manage.HeadlessModuleManage
 import net.rwhps.server.game.player.PlayerHess
 import net.rwhps.server.net.NetService
 import net.rwhps.server.net.core.IRwHps
-import net.rwhps.server.net.core.server.AbstractNetConnectServer
 import net.rwhps.server.plugin.Plugin
 import net.rwhps.server.util.IpUtils
-import net.rwhps.server.util.algorithms.Base64
 import net.rwhps.server.util.annotations.core.EventListenerHandler
-import net.rwhps.server.util.file.json.Json
 import net.rwhps.server.util.game.command.CommandHandler
-import net.rwhps.server.util.inline.ifEmptyResult
 import net.rwhps.server.util.log.Log
 import net.rwhps.server.util.str.StringFilteringUtil.cutting
 import java.util.*
@@ -37,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 
-internal class UpListMain: Plugin() {
+internal class UpListMain : Plugin() {
     private val version = "Version=HPS#1"
     private val privateIp: String
         get() {
@@ -50,7 +46,7 @@ internal class UpListMain: Plugin() {
     private var port = Data.config.port.toString()
 
     private var versionBeta = false
-    private var versionGame = "1.15"
+    private var versionGame = "1.15-UN"
     private var versionGameInt = 176
 
     private var upServerList = false
@@ -70,11 +66,11 @@ internal class UpListMain: Plugin() {
     }
 
     override fun registerEvents(eventManage: EventManage) {
-        eventManage.registerListener(object: EventListenerHost {
+        eventManage.registerListener(object : EventListenerHost {
             @EventListenerHandler
             fun gameover(gameOverEvent: ServerGameOverEvent) {
                 if (over) {
-                    remove({})
+                    remove {}
                 }
                 over = false
             }
@@ -85,7 +81,11 @@ internal class UpListMain: Plugin() {
         handler.removeCommand("upserverlist")
         handler.removeCommand("upserverlistnew")
 
-        handler.register("uplist", "[command...]", "serverCommands.upserverlist") { args: Array<String>?, log: StrCons ->
+        handler.register(
+            "uplist",
+            "[command...]",
+            "serverCommands.upserverlist"
+        ) { args: Array<String>?, log: StrCons ->
             if (!args.isNullOrEmpty()) {
                 when (args[0]) {
                     "add" -> NetStaticData.checkServerStartNet { if (args.size > 1) add(log, args[1]) else add(log) }
@@ -118,10 +118,13 @@ internal class UpListMain: Plugin() {
                             if (initUpListData()) {
                                 over = true
                                 this.port = port.ifBlank { Data.config.port.toString() }
-                                Threads.newThreadCore { upServerList = true; uplistFlag = 1;uplist(player::sendSystemMessage) }
+                                Threads.newThreadCore {
+                                    upServerList = true; uplistFlag = 1;uplist(player::sendSystemMessage)
+                                }
                             }
                         }
                     }
+
                     else -> player.sendSystemMessage("Already on the list")
                 }
 
@@ -136,6 +139,7 @@ internal class UpListMain: Plugin() {
                             remove(player::sendSystemMessage)
                         }
                     }
+
                     else -> player.sendSystemMessage("no uplist")
                 }
             }
@@ -165,7 +169,7 @@ internal class UpListMain: Plugin() {
         }
     }
 
-    private fun uplist(print: (String)->Unit) {
+    private fun uplist(print: (String) -> Unit) {
         var addData0 = addData.replace("{RW-HPS.RW.VERSION}", versionGame)
         addData0 = addData0.replace("{RW-HPS.RW.VERSION.INT}", versionGameInt.toString())
         addData0 = addData0.replace("{RW-HPS.RW.IS.VERSION}", versionBeta.toString())
@@ -183,8 +187,10 @@ internal class UpListMain: Plugin() {
 
         Log.debug(addData0)
 
-        val addGs1 = Data.core.rwHttp.doPost("http://gs1.corrodinggames.com/masterserver/1.4/interface", addData0).contains(serverID)
-        val addGs4 = Data.core.rwHttp.doPost("http://gs4.corrodinggames.net/masterserver/1.4/interface", addData0).contains(serverID)
+        val addGs1 = Data.core.rwHttp.doPost("http://gs1.corrodinggames.com/masterserver/1.4/interface", addData0)
+            .contains(serverID)
+        val addGs4 = Data.core.rwHttp.doPost("http://gs4.corrodinggames.net/masterserver/1.4/interface", addData0)
+            .contains(serverID)
         if (addGs1 || addGs4) {
             if (addGs1 && addGs4) {
                 print(Data.i18NBundle.getinput("err.yesList"))
@@ -197,10 +203,12 @@ internal class UpListMain: Plugin() {
 
         val openData0 = openData.replace("{RW-HPS.S.PORT}", port)
 
-        val checkPortGs1 = Data.core.rwHttp.doPost("http://gs1.corrodinggames.com/masterserver/1.4/interface", openData0)
-            .contains("true")
-        val checkPortGs4 = Data.core.rwHttp.doPost("http://gs4.corrodinggames.net/masterserver/1.4/interface", openData0)
-            .contains("true")
+        val checkPortGs1 =
+            Data.core.rwHttp.doPost("http://gs1.corrodinggames.com/masterserver/1.4/interface", openData0)
+                .contains("true")
+        val checkPortGs4 =
+            Data.core.rwHttp.doPost("http://gs4.corrodinggames.net/masterserver/1.4/interface", openData0)
+                .contains("true")
         if (checkPortGs1 || checkPortGs4) {
             print(Data.i18NBundle.getinput("err.yesOpen"))
         } else {
@@ -218,7 +226,10 @@ internal class UpListMain: Plugin() {
 
 
         updateData0 = updateData0.replace("{RW-HPS.RW.MAP.NAME}", getMapName)
-        updateData0 = updateData0.replace("{RW-HPS.S.STATUS}", if (isRelay || HeadlessModuleManage.hps.room.isStartGame) "ingame" else "battleroom")
+        updateData0 = updateData0.replace(
+            "{RW-HPS.S.STATUS}", /*if (isRelay || HeadlessModuleManage.hps.room.isStartGame) "ingame" else*/
+            "battleroom"
+        )
         updateData0 = updateData0.replace("{RW-HPS.PLAYER.SIZE}", serverPlayerSize.toString())
 
 
@@ -244,15 +255,21 @@ internal class UpListMain: Plugin() {
 
     private val isRelay get() = (NetStaticData.RwHps.netType == IRwHps.NetType.RelayProtocol || NetStaticData.RwHps.netType == IRwHps.NetType.RelayMulticastProtocol)
 
-    private val getMapName get() = Data.config.subtitle.ifEmptyResult({ if (isRelay) "RELAY" else HeadlessModuleManage.hps.room.maps.mapName }) { cutting(it, 15) }
+    private val getMapName
+        get() = Data.config.subtitle.plus(if (isRelay) "RELAY" else HeadlessModuleManage.hps.room.maps.mapName)
 
-    private val serverPlayerSize get() = AtomicInteger().apply {
-        if (isRelay) {
-            NetStaticData.netService.eachAllFind( { it.netType == NetService.Companion.NetTypeEnum.HeadlessNet }) { addAndGet(it.getConnectSize()) }
-        } else {
-            addAndGet(HeadlessModuleManage.hps.room.playerManage.playerGroup.size)
-        }
-    } .get()
+    private val serverPlayerSize
+        get() = AtomicInteger().apply {
+            if (isRelay) {
+                NetStaticData.netService.eachAllFind({ it.netType == NetService.Companion.NetTypeEnum.HeadlessNet }) {
+                    addAndGet(
+                        it.getConnectSize()
+                    )
+                }
+            } else {
+                addAndGet(HeadlessModuleManage.hps.room.playerManage.playerGroup.size)
+            }
+        }.get()
 
     /**
      * Inject multiple languages into the server
@@ -265,7 +282,7 @@ internal class UpListMain: Plugin() {
 
         private fun help() {
             loadCN(
-                    "uplist.help", """       
+                "uplist.help", """       
         [uplist add] 服务器上传到列表 显示配置文件端口
         [uplist add (port)] 服务器上传到列表 服务器运行配置文件端口 显示自定义端口
         [uplist update] 立刻更新列表服务器信息
@@ -274,7 +291,7 @@ internal class UpListMain: Plugin() {
         """.trimIndent()
             )
             loadEN(
-                    "uplist.help", """
+                "uplist.help", """
         [uplist add] Server upload to list Show profile port
         [uplist add (port)] Server upload to list Server running profile port Display custom port
         [uplist update] Update list server information immediately
@@ -283,7 +300,7 @@ internal class UpListMain: Plugin() {
         """.trimIndent()
             )
             loadHK(
-                    "uplist.help", """        
+                "uplist.help", """        
         [uplist add] 服务器上传到列表 显示配置文件端口
         [uplist add (port)] 服务器上传到列表 服务器运行配置文件端口 显示自定义端口
         [uplist update] 立刻更新列表服务器信息
@@ -292,7 +309,7 @@ internal class UpListMain: Plugin() {
         """.trimIndent()
             )
             loadRU(
-                    "uplist.help", """
+                "uplist.help", """
         [uplist add] Загрузка сервера в список Показать порт профиля
         [uplist add (port)] Загрузка сервера в список Порт запущенного профиля сервера Показать пользовательские порты
         [uplist update] Немедленное обновление информации сервера списка

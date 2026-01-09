@@ -29,7 +29,7 @@ import net.rwhps.server.util.file.plugin.PluginManage
  * @author Dr (dr@der.kim)
  */
 @Suppress("UNUSED", "UNUSED_PARAMETER")
-class EventGlobal: EventListenerHost {
+class EventGlobal : EventListenerHost {
     @EventListenerHandler
     fun registerServerHessLoadEvent(serverHessLoadEvent: ServerHessLoadEvent) {
         if (serverHessLoadEvent.loadID == HeadlessModuleManage.hpsLoader) {
@@ -44,7 +44,7 @@ class EventGlobal: EventListenerHost {
 
     @EventListenerHandler
     fun registerServerLoadEvent(serverLoadEvent: ServerLoadEvent) {
-        Data.core.admin.addChatFilter(object: Administration.ChatFilter {
+        Data.core.admin.addChatFilter(object : Administration.ChatFilter {
             override fun filter(player: PlayerHess, message: String?): String? {
                 if (player.muteTime > Time.millis()) {
                     return null

@@ -13,9 +13,6 @@ import com.corrodinggames.rts.union.gameFramework.class_898;
 import com.corrodinggames.rts.union.gameFramework.j.class_1001;
 import com.corrodinggames.rts.union.gameFramework.j.class_1030;
 import com.corrodinggames.rts.union.gameFramework.j.class_1037;
-import net.rwhps.server.game.manage.PlayerManage;
-import net.rwhps.server.game.player.PlayerHess;
-import net.rwhps.server.game.room.ServerRoom;
 import net.rwhps.server.plugin.internal.headless.inject.core.GameEngine;
 
 import java.util.HashMap;
@@ -135,8 +132,8 @@ public class NetHelper {
     }
 
     public static boolean isOp(class_324 player) {
-        return GameEngine.INSTANCE.getData().getRoom().getPlayerManage().getPlayer(player.field_1464).isAdmin();
-        //return player != null && net.field_5851 && (player == net.field_5848 /*|| ((PlayerAccessor) player).get_op()*/);
+        var hess = GameEngine.INSTANCE.getData().getRoom().getPlayerManage().getPlayer(player.field_1457);
+        return player != null && net.field_5851 && (player == net.field_5848 || (hess != null && hess.isAdmin())/*((PlayerAccessor) player).get_op()*/);
     }
 
     public static boolean executeCommand(String name, class_324 player, class_1037 conn, String arg) {

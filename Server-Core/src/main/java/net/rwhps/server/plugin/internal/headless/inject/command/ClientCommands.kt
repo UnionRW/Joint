@@ -31,7 +31,8 @@ import net.rwhps.server.util.IsUtils
 import net.rwhps.server.util.IsUtils.isNumeric
 import net.rwhps.server.util.IsUtils.notIsNumeric
 import net.rwhps.server.util.algorithms.HexUtils
-import net.rwhps.server.util.console.tab.TabDefaultEnum.*
+import net.rwhps.server.util.console.tab.TabDefaultEnum.PlayerPosition
+import net.rwhps.server.util.console.tab.TabDefaultEnum.PlayerPositionAI
 import net.rwhps.server.util.file.plugin.PluginManage
 import net.rwhps.server.util.game.command.CommandHandler
 import net.rwhps.server.util.inline.findField
@@ -41,6 +42,7 @@ import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.abs
 import com.corrodinggames.rts.union.game.units.class_727 as SupBuild
 
 /**
@@ -73,8 +75,7 @@ internal class ClientCommands(handler: CommandHandler) {
         return true
     }
 
-    private fun registerGameCoreCommand(handler: CommandHandler) {
-        /* QC */
+    private fun registerGameCoreCommand(handler: CommandHandler) {/* QC */
         handler.register("credits", "<money>", "HIDE") { args: Array<String>, player: PlayerHess ->
             if (isAdmin(player)) {
                 if (notIsNumeric(args[0])) {
@@ -133,9 +134,7 @@ internal class ClientCommands(handler: CommandHandler) {
             }
         }
         handler.register(
-            "ai",
-            "<difficuld> [$PlayerPositionAI]",
-            "clientCommands.income"
+            "ai", "<difficuld> [$PlayerPositionAI]", "clientCommands.income"
         ) { args: Array<String>, player: PlayerHess ->
             if (isAdmin(player)) {
                 if (room.isStartGame) {
@@ -181,8 +180,7 @@ internal class ClientCommands(handler: CommandHandler) {
                     if (Data.configServer.startMinPlayerSize != -1 && Data.configServer.startMinPlayerSize > room.playerManage.playerGroup.size) {
                         player.sendSystemMessage(
                             player.i18NBundle.getinput(
-                                "start.playerNo",
-                                Data.configServer.startMinPlayerSize
+                                "start.playerNo", Data.configServer.startMinPlayerSize
                             )
                         )
                         return@register
@@ -201,9 +199,7 @@ internal class ClientCommands(handler: CommandHandler) {
             GameEngine.data.eventManage.fire(ServerGameStartEvent(gameModule))
         }
         handler.register(
-            "kick",
-            "<$PlayerPosition>",
-            "clientCommands.kick"
+            "kick", "<$PlayerPosition>", "clientCommands.kick"
         ) { args: Array<String>, player: PlayerHess ->
             if (room.isStartGame) {
                 player.sendSystemMessage(player.i18NBundle.getinput("err.startGame"))
@@ -229,30 +225,33 @@ internal class ClientCommands(handler: CommandHandler) {
             }
         }
         handler.register(
-            "move",
-            "<$PlayerPosition> <ToSerialNumber> <Team>",
-            "HIDE"
+            "move", "<$PlayerPosition> <ToSerialNumber> <Team>", "HIDE"
         ) { args: Array<String>, player: PlayerHess ->
             if (room.isStartGame) {
                 player.sendSystemMessage(player.i18NBundle.getinput("err.startGame"))
                 return@register
             }
             if (isAdmin(player)) {
-                if (notIsNumeric(args[0]) && notIsNumeric(args[1]) && notIsNumeric(args[2])) {
-                    player.sendSystemMessage(player.i18NBundle.getinput("err.noNumber"))
-                    return@register
-                }
-
                 synchronized(gameModule.gameLinkServerData.teamOperationsSyncObject) {
-                    val tg = args[0].toInt() - 1
-                    val playerTarget = class_324.method_526(tg)
-                    if (checkPositionNumb(args[1], player)) {
+                    try {
+                        val tg = args[0].toInt() - 1
                         val site = args[1].toInt() - 1
                         val newTeam = args[2].toInt()
+                        val playerTarget = class_324.method_526(tg)
+
+                        if (site < 0 && site != -3) {
+                            player.sendSystemMessage(player.i18NBundle.getinput("err.noInt"))
+                            return@register
+                        }
+                        if (site > (Data.configServer.maxPlayer)) {
+                            player.sendSystemMessage(player.i18NBundle.getinput("err.maxPlayer"))
+                            return@register
+                        }
+
                         GameEngine.netEngine.method_2733(playerTarget, site)
                         when (newTeam) {
                             -1 -> {
-                                playerTarget.field_1464 = site % 2
+                                playerTarget.field_1464 = abs(site % 2)
                             }
 
                             -4 -> {
@@ -263,14 +262,15 @@ internal class ClientCommands(handler: CommandHandler) {
                                 playerTarget.field_1464 = newTeam
                             }
                         }
+                    } catch (e: NumberFormatException) {
+                        player.sendSystemMessage(player.i18NBundle.getinput("err.noNumber"))
+                        return@register
                     }
                 }
             }
         }
         handler.register(
-            "team",
-            "<$PlayerPosition> <ToTeamNumber>",
-            "HIDE"
+            "team", "<$PlayerPosition> <ToTeamNumber>", "HIDE"
         ) { args: Array<String>, player: PlayerHess ->
             if (room.isStartGame) {
                 player.sendSystemMessage(player.i18NBundle.getinput("err.startGame"))
@@ -340,15 +340,13 @@ internal class ClientCommands(handler: CommandHandler) {
             for (command in handler.commandList) {
                 if (command.description.startsWith("#")) {
                     str.append("   ").append(command.text).append(if (command.paramText.isEmpty()) "" else " ")
-                        .append(command.paramText)
-                        .append(" - ").append(command.description.substring(1))
+                        .append(command.paramText).append(" - ").append(command.description.substring(1))
                 } else {
                     if ("HIDE" == command.description) {
                         continue
                     }
                     str.append("   ").append(command.text).append(if (command.paramText.isEmpty()) "" else " ")
-                        .append(command.paramText)
-                        .append(" - ").append(player.i18NBundle.getinput(command.description))
+                        .append(command.paramText).append(" - ").append(player.i18NBundle.getinput(command.description))
                         .append(Data.LINE_SEPARATOR)
                 }
             }
@@ -474,8 +472,7 @@ internal class ClientCommands(handler: CommandHandler) {
                 gameModule.room.sync = "on".equals(args[0], true)
                 player.sendSystemMessage(
                     localeUtil.getinput(
-                        "server.sync",
-                        if (gameModule.room.sync) "启用" else "禁止"
+                        "server.sync", if (gameModule.room.sync) "启用" else "禁止"
                     )
                 )
             }
@@ -488,9 +485,7 @@ internal class ClientCommands(handler: CommandHandler) {
             player.sendSystemMessage("设置最大人数: ${args[0]}")
         }
         handler.register(
-            "iunit",
-            "<$PlayerPosition> <unitID>",
-            "clientCommands.iunit"
+            "iunit", "<$PlayerPosition> <unitID>", "clientCommands.iunit"
         ) { args: Array<String>, player: PlayerHess ->
             if (room.isStartGame) {
                 player.sendSystemMessage(player.i18NBundle.getinput("err.startGame"))
@@ -562,7 +557,8 @@ internal class ClientCommands(handler: CommandHandler) {
                 player.sendSystemMessage(player.i18NBundle.getinput("clientCommands.nuke.ping"))
                 player.addData<(AbstractNetConnectServer, GamePingActions, Float, Float) -> Unit>("Ping") { _, _, x, y ->
                     GameEngine.data.gameFunction.suspendMainThreadOperations {
-                        val obj = SupBuild::class.java.findField("field_4059", class_349::class.java)!!.get(null) as class_349
+                        val obj =
+                            SupBuild::class.java.findField("field_4059", class_349::class.java)!!.get(null) as class_349
                         val no = SupBuild(false)
                         no.method_908(obj, false, PointF(x, y), null)
                         no.method_927(class_324.method_526(player.index))
@@ -582,7 +578,8 @@ internal class ClientCommands(handler: CommandHandler) {
                 player.sendSystemMessage(player.i18NBundle.getinput("clientCommands.clone.ping"))
                 player.addData<(AbstractNetConnectServer, GamePingActions, Float, Float) -> Unit>("Ping") { _, _, x, y ->
                     gameModule.gameFunction.suspendMainThreadOperations {
-                        val obj = SupBuild::class.java.findField("field_4055", class_349::class.java)!!.get(null) as class_349
+                        val obj =
+                            SupBuild::class.java.findField("field_4055", class_349::class.java)!!.get(null) as class_349
                         val no = SupBuild(false)
                         no.field_1927 = class_324.method_526(player.index)
                         no.method_908(obj, false, PointF(x, y), null)
@@ -595,11 +592,9 @@ internal class ClientCommands(handler: CommandHandler) {
         handler.register("myid", "clientCommands.-") { _: Array<String>, player: PlayerHess ->
             player.sendSystemMessage(
                 player.i18NBundle.getinput(
-                    "myid",
-                    BigInteger(HexUtils.decodeHex(player.connectHexID)).toInt().let { if (it < 0) -it else it })
+                    "myid", BigInteger(HexUtils.decodeHex(player.connectHexID)).toInt().let { if (it < 0) -it else it })
             )
-        }
-        /*
+        }/*
         handler.register("banu", "<ID>", "#BAN UNIT") { args: Array<String>, player: PlayerHess ->
             if (isAdmin(player)) {
                 when (args[0]) {

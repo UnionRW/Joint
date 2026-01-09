@@ -37,7 +37,7 @@ class Administration(pluginData: PluginData) {
     val playerAdminData: ObjectMap<String, PlayerAdminInfo>
 
     init {
-        addChatFilter(object: ChatFilter {
+        /*addChatFilter(object: ChatFilter {
             override fun filter(player: PlayerHess, message: String?): String? {
                 if (!player.isAdmin) {
                     //防止玩家在 30 秒内两次发送相同的消息
@@ -50,7 +50,7 @@ class Administration(pluginData: PluginData) {
                 }
                 return message
             }
-        })
+        })*/
         bannedIPs = pluginData.get("bannedIPs") { Seq() }
         bannedIP24 = pluginData.get("bannedIPs") { Seq() }
         bannedUUIDs = pluginData.get("bannedUUIDs") { Seq() }

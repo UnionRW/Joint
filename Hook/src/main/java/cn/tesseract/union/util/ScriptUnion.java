@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class ScriptUnion {
     private static final HashMap<String, Object> shared = new HashMap<>();
     public final Scriptable scope;
+    public final String side = "SERVER";
 
     public ScriptUnion(Scriptable scope) {
         this.scope = scope;
